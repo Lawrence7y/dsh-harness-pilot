@@ -1,0 +1,17 @@
+{
+  "name": "harness-pilot",
+  "version": "0.3.7",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs"
+  },
+  "dependencies": {
+    "@agentclientprotocol/sdk": "1.4.0",
+    "ws": "8.22.0",
+    "zod": "^4.0.0"
+  }
+}

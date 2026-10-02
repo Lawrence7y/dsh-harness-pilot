@@ -1,0 +1,53 @@
+{
+  "name": "@dsh-external/dsh-harness-pilot",
+  "version": "0.1.0",
+  "description": "把其他 harness（opencode / Antigravity / claude / codex / ZCode / MiMo / Cursor / Qoder …）接入 DeepSeek Harness：作为 DSH 子代理派发任务，可指定各家模型，并在设置页里查看已配置的 harness",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./client.js",
+    "./package.json": "./package.json"
+  },
+  "main": "./lib/index.js",
+  "types": "./lib/types/index.d.ts",
+  "files": [
+    "lib",
+    "client",
+    "python",
+    "scripts",
+    "cordis.patch.yml"
+  ],
+  "license": "BSD-3-Clause",
+  "peerDependencies": {
+    "@deepseek-ai/cordis": ">=4.0.0-rc <5",
+    "@deepseek-ai/dsh-llm": ">=0.0.1-rc <3",
+    "@deepseek-ai/dsh-subagent": ">=0.0.1-rc <3",
+    "@deepseek-ai/dsh-tools": ">=0.0.1-rc <3",
+    "@deepseek-ai/schemastery": "^3.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.3",
+    "typescript": "^5.9.0"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:all": "node scripts/build.mjs",
+    "build:client": "node scripts/build.mjs",
+    "typecheck": "node scripts/build.mjs"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true
+    },
+    "plugin": {
+      "runtime": {
+        "python": ">=3.9 (pyautogui + Pillow + pywin32 + uiautomation) — 仅窗口级操控需要"
+      }
+    }
+  }
+}

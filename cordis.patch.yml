@@ -1,0 +1,26 @@
+# dsh-harness-pilot 的 Cordis patch。
+#
+# 作为 bundle 持久安装（plugin_manager install_bundle / dev_install_package）时，
+# 这一行把插件挂进当前 profile；config 可以不写（内置目标目录即默认值）。
+- insert:
+    - id: harness-pilot
+      name: '@dsh-external/dsh-harness-pilot'
+      # config:
+      #   defaultTarget: opencode
+      #   pythonPath: ''            # 窗口助手用的 python；留空自动探测
+      #   targets:                  # 只写与内置目录的差异
+      #     - name: zcode
+      #       command: 'D:\zai\ZCode\ZCode.exe'
+      #       window:
+      #         launch: 'D:\zai\ZCode\ZCode.exe --remote-debugging-port=9333'
+
+# 可选：每个 harness 再挂一个标准 subagent 工具（tool-subagent），
+# 让模型用宿主自带的 `subagent` 语义直接点名某个 harness，例如：
+#
+# - insert:
+#     - id: harness-subagent-opencode
+#       name: '@deepseek-ai/dsh-tool-subagent'
+#       config:
+#         provider: harness-opencode
+#         toolName: harness_opencode
+#         backgroundMode: one-shot

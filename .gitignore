@@ -1,0 +1,30 @@
+# --- dependencies ---
+node_modules/
+.pnpm-store/
+
+# NOTE: lib/ and client.js are committed on purpose, so the plugin can be
+# installed straight from a git checkout without running a build step.
+
+# --- python ---
+__pycache__/
+*.py[cod]
+
+# --- local packaging / release archives ---
+dist/
+*.zip
+*.rollback-*/
+
+# --- dev probes & scratch output ---
+probe/
+
+# --- local runtime state (never publish) ---
+runtime-settings.json
+tasks/
+.env
+.env.*
+
+# --- editor / OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

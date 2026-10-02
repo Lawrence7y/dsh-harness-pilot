@@ -1,0 +1,17 @@
+{
+  "maxConcurrent": 4,
+  "pythonPath": "",
+  "targets": [
+    {
+      "name": "my-harness",
+      "command": "C:\\Tools\\my-harness.exe",
+      "args": ["run"],
+      "modelArgs": ["--model", "{model}"],
+      "modelsCommand": "C:\\Tools\\my-harness.exe",
+      "modelsArgs": ["models"],
+      "order": ["headless"],
+      "transport": "headless",
+      "timeoutMs": 600000
+    }
+  ]
+}

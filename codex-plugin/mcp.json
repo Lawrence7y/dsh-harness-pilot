@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "harness-pilot": {
+      "command": "node",
+      "args": [
+        "${PLUGIN_ROOT}/scripts/start.mjs"
+      ],
+      "type": "stdio",
+      "env_vars": [
+        "CODEX_APP_TOOLS_PIPE_PATH",
+        "CODEX_THREAD_ID"
+      ]
+    }
+  },
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json"
+}

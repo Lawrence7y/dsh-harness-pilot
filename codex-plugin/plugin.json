@@ -1,0 +1,37 @@
+{
+  "name": "harness-pilot",
+  "version": "0.3.7",
+  "description": "派发本机 harness 子代理，指定模型，完成后回执唤醒原 Codex 会话并续办任务。",
+  "author": {
+    "name": "dsh-harness-pilot"
+  },
+  "keywords": [
+    "harness",
+    "handoff",
+    "opencode",
+    "antigravity",
+    "zcode",
+    "mimo",
+    "qoder",
+    "dispatch"
+  ],
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Harness Pilot",
+        "shortDescription": "本机子代理调度、模型选择与进度读取",
+        "longDescription": "默认后台派发后结束本轮，harness 完成时通过本机桌面工具通道回执原会话，Codex 自动读取结果、独立检查并按需继续派发。支持 CLI、ACP、PTY、CDP 和窗口通道；不依赖 DSH 常驻。",
+        "developerName": "dsh-harness-pilot",
+        "category": "Productivity",
+        "capabilities": [],
+        "brandColor": "#3B82F6",
+        "defaultPrompt": [
+          "看一下本机有哪些 harness 可用",
+          "把这个任务交给 opencode 跑一遍",
+          "把 ZCode 的模型切成 GLM-5.3"
+        ]
+      }
+    }
+  }
+}

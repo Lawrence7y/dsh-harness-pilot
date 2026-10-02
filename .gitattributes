@@ -1,0 +1,8 @@
+# Normalize line endings so a Windows checkout doesn't commit CRLF noise.
+* text=auto eol=lf
+
+# Keep binaries untouched (if any are added later).
+*.png binary
+*.jpg binary
+*.zip binary
+*.ico binary
