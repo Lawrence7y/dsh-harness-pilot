@@ -16,12 +16,22 @@ export interface RuntimeSettings {
   deliverResult: boolean
   /** 交付内容正文的截断长度（字符）。 */
   maxResultChars: number
-  /** 同时运行的异步任务上限。 */
+  /** 同时运行的异步任务上限；0 表示不限数量。 */
   maxConcurrent: number
   /** 异步任务默认硬超时（毫秒）。 */
   defaultTaskTimeoutMs: number
   /** 回执里附加的续办提示（空 = 用内置提示语）。 */
   resumeInstruction: string
+  /**
+   * **会话模型菜单**里每个 harness 最多列多少个模型（0 = 不限）。
+   *
+   * ⚠️ **2026-10-14 起这个旋钮不再生效**（保留字段只为兼容旧设置文件，改它没有任何效果）：
+   * 模型目录已改成「**一个 harness 一个 provider 分组**」，宿主原生菜单是
+   * 「供应商列表 → 钻进该供应商看它的全部模型」的两级形态 ⇒ 每组内部**不再截断**
+   * （用户明确要求「点开折叠后才是该 harness 的全部模型」，也不允许「任意截断」）。
+   * 当时引入这个旋钮是为了压住「单 provider 734 条扁平条目」，而那正是分组要解决的问题本身。
+   */
+  sessionModelLimit: number
 }
 
 export const DEFAULT_SETTINGS: RuntimeSettings = {
@@ -31,6 +41,8 @@ export const DEFAULT_SETTINGS: RuntimeSettings = {
   maxConcurrent: 4,
   defaultTaskTimeoutMs: 600000,
   resumeInstruction: '',
+  // 0 = 不截断（本字段已不再生效，见接口注释）。
+  sessionModelLimit: 0,
 }
 
 /** 插件数据目录（任务落盘 + 运行时设置）。可用 HARNESS_PILOT_HOME 覆盖。 */
@@ -56,9 +68,11 @@ export function normalizeSettings(raw: unknown, base: RuntimeSettings = DEFAULT_
     notifyOnComplete: typeof input.notifyOnComplete === 'boolean' ? input.notifyOnComplete : base.notifyOnComplete,
     deliverResult: typeof input.deliverResult === 'boolean' ? input.deliverResult : base.deliverResult,
     maxResultChars: clampNumber(input.maxResultChars, base.maxResultChars, 500, 200000),
-    maxConcurrent: clampNumber(input.maxConcurrent, base.maxConcurrent, 1, 16),
+    maxConcurrent: typeof input.maxConcurrent === 'number' && Number.isFinite(input.maxConcurrent) && input.maxConcurrent >= 0
+      ? Math.min(Number.MAX_SAFE_INTEGER, Math.round(input.maxConcurrent)) : base.maxConcurrent,
     defaultTaskTimeoutMs: clampNumber(input.defaultTaskTimeoutMs, base.defaultTaskTimeoutMs, 5000, 24 * 60 * 60 * 1000),
     resumeInstruction: typeof input.resumeInstruction === 'string' ? input.resumeInstruction.slice(0, 4000) : base.resumeInstruction,
+    sessionModelLimit: clampNumber(input.sessionModelLimit, base.sessionModelLimit, 0, 2000),
   }
 }
 

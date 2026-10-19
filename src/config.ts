@@ -4,6 +4,9 @@
  * 内置一份「本机实探过的 harness 目录」：CLI 类走 acp/headless/pty，GUI 类走 cdp/window。
  * 用户在 profile 里只写差异项（换路径、固定模型、加参数）。
  */
+import { existsSync, readdirSync } from 'node:fs'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import z from '@deepseek-ai/schemastery'
 import type { CdpSpec, TargetConfig, WindowSpec } from './types.js'
 
@@ -45,6 +48,14 @@ const cdpSchema = z.object({
   transcriptSelector: z.string().default(''),
   inputSelector: z.string().default(''),
   sendSelector: z.string().default(''),
+  pageMatch: z.string().default(''),
+  readback: z.object({
+    sessionIdExpression: z.string().default(''),
+    command: z.string().default(''),
+    args: z.array(z.string()).default([]),
+    extract: z.string().default(''),
+    timeoutMs: z.number().default(30000),
+  }).default({}),
 })
 
 const targetSchema = z.object({
@@ -56,8 +67,48 @@ const targetSchema = z.object({
   acpArgs: z.array(z.string()).default([]),
   acpModel: z.string().default(''),
   modelArgs: z.array(z.string()).default([]),
+  /** 推理等级声明（可选；缺省 = 不提供推理等级选择）：见 types.ts TargetConfig.thinking。 */
+  thinking: z.object({
+    levels: z.array(z.object({ id: z.string(), name: z.string() })),
+    default: z.string(),
+    args: z.array(z.string()),
+  }),
+  /**
+   * 结构化原生会话协议能力（可选；缺省 = 不启用 JSONL 原生解析，旧 text CLI 路径不变）。
+   * 声明了本能力的目标支持持久逻辑会话与原生 ID 精确恢复（`transports/native-cli.ts`）。
+   * ⚠️ schemastery 没有 enum 构造器：协议取值在类型层约束（'claude-stream-json' | 'agy-jsonl'），
+   * 运行时由 dispatchNativeCli 显式校验（未知值显式拒绝，不静默按某家解析）。
+   */
+  nativeCli: z.object({
+    protocol: z.string(),
+    newSessionArgs: z.array(z.string()).default([]),
+    resumeArgs: z.array(z.string()).default([]),
+    outputArgs: z.array(z.string()).default([]),
+    // prompt 内联旗标（可选）：`{prompt}` 占位符。声明的目标 native/headless 两路都把
+    // prompt 放进 argv（不再走 stdin）。见 types.ts NativeCliConfig.promptArg。
+    // 空数组 = 未声明（缺省 stdin 行为不变）。
+    promptArg: z.array(z.string()).default([]),
+  }),
   modelsCommand: z.string().default(''),
   modelsArgs: z.array(z.string()).default([]),
+  modelsFile: z.string().default(''),
+  /**
+   * 厂商**产品配置缓存**（`…/cache/acc-product-config-v3.json`）——该 CLI/桌面端认的**完整模型名册**。
+   *
+   * 与 `modelsFile` 的区别（为什么两个都要）：
+   *   · `modelsFile`（如 `~/.codebuddy/models.json`）是**底层目录快照**，里面的 `r-*` **不能**作为
+   *     `--model` 取值（实测 CLI 会响亮拒绝）⇒ 只能展示；
+   *   · 本字段指向厂商 product config，里面 `models[]` 是**名册**（本机实测：国内 55 条 / 国际 30 条），
+   *     带 `id` / `name` / `vendor` / `isDefault` / `maxInputTokens` / `maxOutputTokens` /
+   *     `supportsToolCall|Reasoning|Images` / `relatedModels` —— 这些是**元数据**，让界面能说清
+   *     「哪些能选、哪些只是名册里的、每条的上下文与输出上限、哪个是厂商默认」。
+   *
+   * ⚠️ 安全边界（与 `native-model-catalog.ts` 的读取纪律一致）：**只读 `models[]` 数组**，
+   * 绝不读取同文件里的 `authentication` 等任何凭据字段。该文件里**确实有**认证相关键，
+   * 所以这条边界由离线探针**静态断言**（源码里不得出现 `authentication`）。
+   */
+  productConfigFile: z.string().default(''),
+  modelsFixed: z.array(z.string()).default([]),
   modelsCacheMs: z.number().default(300000),
   modelsTimeoutMs: z.number().default(25000),
   promptViaStdin: z.boolean().default(false),
@@ -101,6 +152,14 @@ function cdpSpec(patch: Partial<CdpSpec> = {}): CdpSpec {
     transcriptSelector: '',
     inputSelector: '',
     sendSelector: '',
+    pageMatch: '',
+    readback: {
+      sessionIdExpression: '',
+      command: '',
+      args: [],
+      extract: '',
+      timeoutMs: 30000,
+    },
     ...patch,
   }
 }
@@ -125,6 +184,9 @@ function target(patch: TargetPatch): TargetConfig {
     modelArgs: [],
     modelsCommand: '',
     modelsArgs: [],
+    modelsFile: '',
+    productConfigFile: '',
+    modelsFixed: [],
     modelsCacheMs: 300000,
     modelsTimeoutMs: 25000,
     promptViaStdin: false,
@@ -143,149 +205,128 @@ function target(patch: TargetPatch): TargetConfig {
   }
 }
 
+/** 各 CLI 实测支持的推理档位词表（与 2026-10-15 的 `--help` 输出一一核对）。 */
+const EFFORTS_CODEX = { levels: [
+  { id: 'minimal', name: 'Minimal（最省）' },
+  { id: 'low', name: 'Low（低）' },
+  { id: 'medium', name: 'Medium（中）' },
+  { id: 'high', name: 'High（高）' },
+], default: 'medium', args: ['-c', 'model_reasoning_effort={effort}'] } as const
+const EFFORTS_CLAUDE = { levels: [
+  { id: 'low', name: 'Low（低）' },
+  { id: 'medium', name: 'Medium（中）' },
+  { id: 'high', name: 'High（高）' },
+  { id: 'xhigh', name: 'XHigh（超高）' },
+  { id: 'max', name: 'Max（最大）' },
+], default: 'medium', args: ['--effort', '{effort}'] } as const
+const EFFORTS_PI = { levels: [
+  { id: 'off', name: 'Off（关闭）' },
+  { id: 'minimal', name: 'Minimal（最省）' },
+  { id: 'low', name: 'Low（低）' },
+  { id: 'medium', name: 'Medium（中）' },
+  { id: 'high', name: 'High（高）' },
+  { id: 'xhigh', name: 'XHigh（超高）' },
+  { id: 'max', name: 'Max（最大）' },
+], default: 'medium', args: ['--thinking', '{effort}'] } as const
+
 /** 本机路径（由一次只读普查确定；换机器时在 profile 里覆盖即可）。 */
 const WB_NODE_MODULES = 'C:\\Users\\Administrator\\.workbuddy\\binaries\\node\\versions\\22.22.2\\node_modules'
-const ZCODE_CLI = 'D:\\zai\\ZCode\\resources\\glm\\zcode.cjs'
-const CODEBUDDY_CLI = 'D:\\workbuddy\\resources\\app.asar.unpacked\\cli\\bin\\codebuddy'
-const QODER_CLI = 'D:\\Qoder\\resources\\app\\resources\\bin\\x86_64_windows\\qodercli.exe'
 
+/**
+ * 随包受管 bootstrap 适配器的**绝对路径**（目标 argv 需要绝对路径；解析相对本模块的 lib/ 位置，
+ * 因此无论插件安装在哪、或跑在暂存副本里，都指向**它自己**的 assets——不指向源根）。
+ */
+function packagedManagedAdapter(): string {
+  try {
+    return join(dirname(fileURLToPath(import.meta.url)), '..', 'assets', 'workbuddy-managed.cjs')
+  } catch {
+    return 'workbuddy-managed.cjs'
+  }
+}
+
+/** WorkBuddy 受管账号的隔离档案容器（wrapper 的默认 profile 根；冻结 HOME 的源）。 */
+const ACCOUNTS_ROOT = 'C:\\Users\\Administrator\\.dsh\\harness-accounts'
+
+function safeExists(path: string): boolean {
+  try {
+    return existsSync(path)
+  } catch {
+    return false
+  }
+}
+
+/**
+ * 解析「安装目录名易变」的 GUI 目标的可执行文件路径。
+ *
+ * 背景：Qoder CN IDE 升级/重装会把安装目录在 `D:\Qoder CNide` 与 `D:\Qoder CN IDE`
+ * 之间改名（本机 2026-10-09 实测就是这种情况：旧的 `D:\Qoder CN IDE` 只剩
+ * `resources/` + `debug.log`，exe 已在 `D:\Qoder CNide`）。`command` 一旦对不上，
+ * cdp 通道会因「命令无法解析」直接 skip、window 通道也匹配不到进程，**整个目标静默失效**
+ * —— 而且因为目录还在，光看路径存在性还发现不了。
+ *
+ * 所以这里按「已知候选（新的在前）→ 扫描常见根目录下带同名 exe 的目录」两段解析，
+ * 让目录改名不再需要改配置。
+ */
 /**
  * 内置目标目录。
  *
  * 顺序即真相：能走 ACP 就先 ACP（流式、结构化），其次一次性打印，再退到 PTY，
  * 最后才是 GUI 的 CDP / 窗口。
  */
-export const KNOWN_TARGETS: readonly TargetConfig[] = [
-  // ── OpenCode 系（ACP + 一次性打印 + ConPTY）──
-  target({
-    name: 'opencode',
-    description: 'OpenCode CLI 2.0.14：支持 ACP、run 一次性打印、交互 TUI',
-    command: 'opencode',
-    args: ['run'],
-    acpArgs: ['acp'],
-    // opencode 的 ACP 默认模型走 OpenRouter（本机余额不足）；ACP 无 --model，只能会话内切。
-    acpModel: 'opencode-go/deepseek-v4.1-flash',
-    modelArgs: ['--model', '{model}'],
-    modelsCommand: 'opencode',
-    modelsArgs: ['models'],
-    order: ['acp', 'headless', 'pty'],
-    window: { process: 'opencode', title: '/opencode/i' },
-  }),
-  target({
-    name: 'opencode-flash',
-    description: 'OpenCode CLI，模型固定为 opencode-go/deepseek-v4.1-flash（本机实测可用）；演示每个目标可绑定不同模型',
-    command: 'opencode',
-    args: ['run', '--model', 'opencode-go/deepseek-v4.1-flash'],
-    acpArgs: ['acp'],
-    acpModel: 'opencode-go/deepseek-v4.1-flash',
-    modelArgs: ['--model', '{model}'],
-    modelsCommand: 'opencode',
-    modelsArgs: ['models'],
-    order: ['headless', 'pty'],
-    window: { process: 'opencode', title: '/opencode/i' },
-  }),
-  target({
-    name: 'opencode-tui',
-    description: 'OpenCode 交互式 TUI（无参数）；给 harness_open / harness_send 用的 ConPTY 会话目标',
-    command: 'opencode',
-    args: [],
-    modelArgs: ['--model', '{model}'],
-    modelsCommand: 'opencode',
-    modelsArgs: ['models'],
-    order: ['pty'],
-    window: { process: 'opencode', title: '/opencode/i' },
-  }),
+export function installedCodexEntry(root = join(process.env.LOCALAPPDATA ?? join(process.env.USERPROFILE ?? '', 'AppData', 'Local'), 'OpenAI', 'Codex', 'bin')): string {
+  try {
+    for (const entry of readdirSync(root).sort()) {
+      const file = join(root, entry, 'codex.exe')
+      if (safeExists(file)) return file
+    }
+  } catch { /* fall back to the installed CLI on PATH */ }
+  return 'codex'
+}
 
-  // ── 国内 harness 的 CLI 版（ACP 或一次性打印）──
+export const KNOWN_TARGETS: readonly TargetConfig[] = [
+  /**
+   * ⚠️ 2026-10-15 二次收缩（用户指示）：
+   *   · 从本插件删除：opencode 全家（CLI/flash/TUI/桌面端）、command-code、grok、cursor
+   *     （其中 Grok Bot 已从本机卸载）；zcode / zcode-cli / kimi / minimax 因「无法获取模型」删除
+   *     （kimi 未登录且 provider 表为空；zcode CLI 无模型枚举机制；minimax 仅 GUI 且 mavis shim 失效）。
+   *   · 2026-10-15 三改：MiMo Code CLI（`C:\Users\Administrator\.mimocode`，@mimo-ai/plugin 0.1.14）
+   *     已按用户指示卸载（PATH 条目一并清除），mimo-cli 目标随之删除；只保留 MiMo 桌面端。
+   *   · 保留的都是「DeepSeek 宿主原生调不了」的 CLI / 桌面端。
+   */
+
+  // ── 国外 CLI ──
+  // ⚠️ 2026-10-16 headless 写盘授权（统筹会话修复请求，用户指令）：
+  //   这四个通道以非交互模式跑卡（`-p` / `exec`），审批请求无人应答 ⇒ Write/Bash 一律
+  //   「非交互模式下需审批→被拒」，派给它们的卡只能只读分析、落不了盘。
+  //   因此为它们显式声明权限旁路旗标（词表各家 --help 实测，2026-10-16 本机）：
+  //     · workbuddy-native / workbuddy-ai-native（claude 系）：`--permission-mode bypassPermissions`
+  //       （choices: acceptEdits, bypassPermissions, default, plan, dontAsk, auto —— camelCase）
+  //     · qoder-cn-native（claude 系）：`--permission-mode bypass_permissions`
+  //       （choices: default, accept_edits, bypass_permissions, dont_ask, auto —— snake_case）
+  //     · codex：`--dangerously-bypass-approvals-and-sandbox`
+  //       （codex exec 无 --full-auto；-s 的 danger-full-access 只关沙箱不关审批，
+  //        审批在 exec 里仍会被拒 —— 该旗标才同时跳过审批与沙箱，是 bypassPermissions 的等效物）
+  //   这是**有意的产品化决定**（不是掩盖接入缺陷）：旁路只作用于用户显式派卡的受管通道，
+  //   目标 description 里可见、可审计。
   target({
-    name: 'mimo-cli',
-    description: '小米 MiMo CLI 0.1.4（mimocode，OpenCode 分支）：支持 acp 与 run',
-    command: 'mimo',
-    args: ['run'],
-    acpArgs: ['acp'],
+    name: 'claude',
+    description: 'Claude Code 2.1.259（WorkBuddy 内置，PATH 上没有 claude shim）：-p 一次性打印',
+    command: `${WB_NODE_MODULES}\\@anthropic-ai\\claude-code\\bin\\claude.exe`,
+    args: ['-p'],
+    promptViaStdin: true,
     modelArgs: ['--model', '{model}'],
-    modelsCommand: 'mimo',
-    modelsArgs: ['models'],
-    order: ['acp', 'headless', 'pty'],
-    window: { process: 'mimo', title: '/mimo/i' },
-  }),
-  target({
-    name: 'codebuddy',
-    description: 'WorkBuddy 内置 CodeBuddy CLI：帮助文本声明支持 --acp 与 -p --model，但本机 bin 实际是坏的（Cannot find module \'../dist/codebuddy\'），跑不起来 —— 保留条目以便修复后可用；WorkBuddy 桌面端请用 workbuddy 目标',
-    command: 'node',
-    args: [CODEBUDDY_CLI, '-p'],
-    acpArgs: [CODEBUDDY_CLI, '--acp'],
-    order: ['acp', 'headless', 'pty'],
-  }),
-  target({
-    name: 'zcode-cli',
-    description: 'ZCode 内置 CLI 0.16.9（zcode.cjs，必须走 ELECTRON_RUN_AS_NODE）：-p 一次性打印。实测**没有 --model 参数**，模型只在 ~/.zcode/cli/config.json 或 TUI 的 /model 里选',
-    command: 'D:\\zai\\ZCode\\ZCode.exe',
-    args: [ZCODE_CLI, '-p'],
-    env: { ELECTRON_RUN_AS_NODE: '1' },
+    thinking: EFFORTS_CLAUDE,
     order: ['headless', 'pty'],
   }),
   target({
-    name: 'qoder-cli',
-    description: 'Qoder IDE 内置 qodercli 1.7.0：-p 一次性打印、-f json 机器可读',
-    command: QODER_CLI,
-    args: ['-p'],
-    // Go 版 qodercli 的 --model 取固定档位（auto/efficient/gmodel/…），不是 provider/model
-    modelArgs: ['--model', '{model}'],
-    order: ['headless', 'pty'],
-    timeoutMs: 900000,
-  }),
-  target({
-    name: 'qodercli',
-    description: 'Qoder CLI（qodersec 全局版 1.0.45）：布尔 -p + 位置参数，-o 指定输出格式',
-    command: 'C:\\Users\\Administrator\\.qodersec\\bin\\qodercli.exe',
-    args: ['-p'],
+    name: 'codex',
+    description: 'OpenAI Codex CLI：exec 非交互；模型由 -m 选择，版本以运行探测为准。带 --dangerously-bypass-approvals-and-sandbox（exec 非交互无人应答审批，不旁路则只能只读；2026-10-16 统筹请求）',
+    command: installedCodexEntry(),
+    args: ['exec', '--skip-git-repo-check', '--dangerously-bypass-approvals-and-sandbox', '-'],
+    promptViaStdin: true,
     modelArgs: ['-m', '{model}'],
-    modelsCommand: 'C:\\Users\\Administrator\\.qodersec\\bin\\qodercli.exe',
-    modelsArgs: ['--list-models'],
+    thinking: EFFORTS_CODEX,
     order: ['headless', 'pty'],
-  }),
-  target({
-    name: 'qoderclicn',
-    description: 'Qoder CLI CN（qodersec 全局版 1.1.41）：布尔 -p + 位置参数',
-    command: 'C:\\Users\\Administrator\\.qodersec\\bin\\qoderclicn.exe',
-    args: ['-p'],
-    modelArgs: ['-m', '{model}'],
-    modelsCommand: 'C:\\Users\\Administrator\\.qodersec\\bin\\qoderclicn.exe',
-    modelsArgs: ['--list-models'],
-    order: ['headless', 'pty'],
-  }),
-  target({
-    name: 'kimi',
-    description: 'Kimi Code CLI：支持 acp 与 -p 一次性打印',
-    command: 'C:\\Users\\Administrator\\.kimi-code\\bin\\kimi.exe',
-    args: ['-p'],
-    acpArgs: ['acp'],
-    modelArgs: ['-m', '{model}'],
-    order: ['acp', 'headless', 'pty'],
-  }),
-  target({
-    name: 'grok-cli',
-    description: 'Grok CLI（Rust）：-p/--single 一次性打印，--output-format json',
-    command: 'C:\\Users\\Administrator\\AppData\\Local\\grok\\grok.exe',
-    args: ['-p'],
-    modelArgs: ['-m', '{model}'],
-    modelsCommand: 'grok',
-    modelsArgs: ['models'],
-    order: ['headless', 'pty'],
-  }),
-  target({
-    name: 'agy',
-    description: 'Antigravity CLI 1.2.12（Google）：-p/--print 一次性打印，--output-format 可选 text/json/stream-json。注意 agy models 返回的是**目录**（14 个：Gemini 11 · Claude 2 · GPT-OSS 1），当前登录态下 entitlement 拉取被跳过，实际可用范围以运行为准；账号 <redacted>',
-    command: 'agy',
-    args: ['--output-format', 'json', '-p'],
-    modelArgs: ['--model', '{model}'],
-    modelsCommand: 'agy',
-    modelsArgs: ['models'],
-    modelsTimeoutMs: 150000,
-    order: ['headless', 'pty'],
-    timeoutMs: 900000,
-    window: { process: 'agy', title: '/agy|antigravity/i' },
   }),
   target({
     name: 'pi',
@@ -295,147 +336,92 @@ export const KNOWN_TARGETS: readonly TargetConfig[] = [
     modelArgs: ['--model', '{model}'],
     modelsCommand: 'pi',
     modelsArgs: ['--list-models'],
-    order: ['headless', 'pty'],
-  }),
-  target({
-    name: 'command-code',
-    description: 'Command Code CLI 1.38.2：-p 非交互，--output-format json（NDJSON 事件流）',
-    command: 'node',
-    args: [`${WB_NODE_MODULES}\\command-code\\dist\\index.mjs`, '-p'],
-    order: ['headless', 'pty'],
-  }),
-
-  // ── 国外 CLI ──
-  target({
-    name: 'claude',
-    description: 'Claude Code 2.1.259（WorkBuddy 内置，PATH 上没有 claude shim）：-p 一次性打印',
-    command: `${WB_NODE_MODULES}\\@anthropic-ai\\claude-code\\bin\\claude.exe`,
-    args: ['-p'],
-    modelArgs: ['--model', '{model}'],
-    order: ['headless', 'pty'],
-  }),
-  target({
-    name: 'codex',
-    description: 'OpenAI Codex CLI（原生 0.154.0-alpha）：codex exec 非交互；本版无 --full-auto，用 -s/-a 控制沙箱与审批',
-    command: 'C:\\Users\\Administrator\\AppData\\Local\\OpenAI\\Codex\\bin\\bffc5354119c8421\\codex.exe',
-    args: ['exec'],
-    modelArgs: ['-m', '{model}'],
-    order: ['headless', 'pty'],
-  }),
-  target({
-    name: 'gemini',
-    description: 'Gemini CLI（本机未安装；装了即可用 -p）',
-    command: 'gemini',
-    args: ['-p'],
-    order: ['headless', 'pty'],
-  }),
-  target({
-    name: 'qwen',
-    description: 'Qwen Code CLI（本机未安装；装了即可用 -p）',
-    command: 'qwen',
-    args: ['-p'],
+    thinking: EFFORTS_PI,
     order: ['headless', 'pty'],
   }),
 
   // ── GUI / Electron harness：CDP 读 DOM 优先，窗口级操控兜底 ──
   target({
-    name: 'zcode',
-    description: 'ZCode 桌面端 3.14.4（z.ai；Electron）。实测账号级可用 5 家供应商 / 8 个模型：opencode(deepseek-v4.1-flash, mimo-v2.6-flash) · xiaomi-mimo(mimo-v2.6-pro, mimo-v2.6-flash) · step(step-5-preview) · synapse(claude-opus-5-5) · bigmodel(GLM-5.3, GLM-5.3-Flash)；套餐路由均 coding_plan_not_entitled。GUI 读不到正文时改用 zcode-cli 目标',
-    transport: 'cdp',
-    order: ['cdp', 'window'],
-    command: 'D:\\zai\\ZCode\\ZCode.exe',
-    window: { process: 'ZCode.exe', title: '/ZCode/i', openInputKeys: ['ctrl+n'] },
-    cdp: { launchArgs: ['--remote-debugging-port=<port>'], port: 9333 },
-  }),
-  target({
-    name: 'mimo-ai',
-    description: '小米 MiMo AI 桌面端（第二个安装/账号 <redacted> · SGP；Electron）。账号级模型 7 个：mimo-v2.6-pro / mimo-v2.6-flash + 3 个 TTS + mimo-v2.5-asr + gpt-image-2（图像，与非 AI 版的 Seedream 不同），默认 mimo-v2.6-pro；模型只能在它自己的界面里选。没在跑时由 cdp 带调试端口拉起，已在跑则退回窗口通道',
-    transport: 'cdp',
-    order: ['cdp', 'window'],
-    command: 'D:\\mimo\\Xiaomi MiMo AI\\Xiaomi MiMo AI.exe',
-    window: { process: 'Xiaomi MiMo AI.exe', title: '/MiMo/i' },
-    cdp: { launchArgs: ['--remote-debugging-port=<port>'], port: 9335 },
-  }),
-  target({
     name: 'mimo',
-    description: '小米 MiMo 桌面端（Electron；账号 <redacted> · CN）。账号级模型 7 个：mimo-v2.6-pro / mimo-v2.6-flash（文本）+ 3 个 TTS + mimo-v2.5-asr + Doubao-Seedream-5.0-pro（图像），默认 mimo-v2.6-pro；模型只能在它自己的界面里选。CLI 版见 mimo-cli 目标',
+    description: '小米 MiMo 桌面端（Electron；账号 3207006862 · CN）。账号级文本模型 mimo-v2.6-pro / mimo-v2.6-flash（另有 TTS/ASR/图像），默认 mimo-v2.6-pro；模型只能在它自己的界面里选（MiMo Code CLI 已卸载，无枚举命令，选择器只展示「CLI 默认模型」档）',
     transport: 'cdp',
     order: ['cdp', 'window'],
     command: 'D:\\mimo\\Xiaomi MiMo\\Xiaomi MiMo.exe',
     window: { process: 'Xiaomi MiMo.exe', title: '/MiMo/i' },
     cdp: { launchArgs: ['--remote-debugging-port=<port>'], port: 9334 },
   }),
+
+  // ── 持久原生会话的五路产品入口（最小改造执行计划 P2）─────────────────────
+  // 协议依据：work/cli-session-audit/（2026-10-15 两轮进程间恢复实测）。
+  // 声明了 nativeCli 的目标支持持久逻辑会话 + 原生 ID 精确恢复；
+  // Qoder CN IDE 无等价 headless CLI，不声明协议能力，只保留桌面入口（不冒充 CLI 会话）。
   target({
-    name: 'workbuddy',
-    description: 'WorkBuddy 桌面端 5.6.2（腾讯；Electron）。内置 CodeBuddy CLI 见 codebuddy 目标',
-    transport: 'cdp',
-    order: ['cdp', 'window'],
+    name: 'workbuddy-native',
+    description: 'WorkBuddy（CN；受管 bootstrap workbuddy-a，密钥保护/冻结 HOME/适配器哈希+厂商版本门禁在派发前实测）：-p --output-format stream-json；--session-id 新建 / --resume 精确恢复（两轮进程间恢复已实测）。带 --permission-mode bypassPermissions（-p 非交互无人应答审批，不旁路则 Write/Bash 全被拒、落不了盘；2026-10-16 统筹请求）',
     command: 'D:\\workbuddy\\WorkBuddy.exe',
-    window: { process: 'WorkBuddy', title: '/WorkBuddy/i' },
-    cdp: { launchArgs: ['--remote-debugging-port=<port>'], port: 9340 },
+    args: [packagedManagedAdapter(), 'workbuddy-a', '-p', '--permission-mode', 'bypassPermissions'],
+    env: { ELECTRON_RUN_AS_NODE: '1' },
+    promptViaStdin: true,
+    nativeCli: {
+      protocol: 'claude-stream-json',
+      newSessionArgs: ['--session-id', '{sessionId}'],
+      resumeArgs: ['--resume', '{sessionId}'],
+      outputArgs: ['--output-format', 'stream-json', '--verbose'],
+    },
+    order: ['headless'],
   }),
   target({
-    name: 'qoder',
-    description: 'Qoder IDE 1.26（阿里；VSCode fork）。内置 qodercli 见 qoder-cli 目标',
-    transport: 'cdp',
-    order: ['cdp', 'window'],
-    command: 'D:\\Qoder\\Qoder.exe',
-    window: { process: 'Qoder.exe', title: '/Qoder/i' },
-    cdp: { launchArgs: ['--remote-debugging-port=<port>'], port: 9342 },
+    name: 'workbuddy-ai-native',
+    description: 'WorkBuddy.AI（国际；受管 bootstrap workbuddy-ai-b，独立入口与档案，不与 CN 版混用认证/默认模型/恢复目录）：协议同 workbuddy-native（两轮进程间恢复已实测）。带 --permission-mode bypassPermissions（同 workbuddy-native：非交互不旁路则落不了盘；2026-10-16 统筹请求）',
+    command: 'D:\\workbuddy ai\\WorkBuddyAI\\WorkBuddyAI.exe',
+    args: [packagedManagedAdapter(), 'workbuddy-ai-b', '-p', '--permission-mode', 'bypassPermissions'],
+    env: { ELECTRON_RUN_AS_NODE: '1' },
+    promptViaStdin: true,
+    nativeCli: {
+      protocol: 'claude-stream-json',
+      newSessionArgs: ['--session-id', '{sessionId}'],
+      resumeArgs: ['--resume', '{sessionId}'],
+      outputArgs: ['--output-format', 'stream-json', '--verbose'],
+    },
+    order: ['headless'],
   }),
   target({
-    name: 'qoder-cn',
-    description: 'Qoder CN IDE 1.30（阿里云；VSCode fork）。实测界面可选 14 档（含 Auto）：Qwen3.8-Max/Qwen3.8-Flash(当前)/Qwen3.7-Max/Plus/Flash · DeepSeek-V4-Pro/DeepSeek-Flash · GLM-5.3/5.3-Flash/5.2 · Kimi-K3/K2.8-Preview · MiniMax-M2.7；账号 <redacted>（IDE 已登录，CLI qoderclicn 未登录）',
-    transport: 'cdp',
-    order: ['cdp', 'window'],
-    command: 'D:\\Qoder CN IDE\\Qoder CN IDE.exe',
-    window: { process: 'Qoder CN IDE.exe', title: '/Qoder/i' },
-    cdp: { launchArgs: ['--remote-debugging-port=<port>'], port: 9336 },
+    name: 'qoder-cn-native',
+    description: 'Qoder CN CLI（--config-dir 绑定 qoder-cn-a 隔离档案；注意：CLI 会话与 Qoder CN 工作台/IDE 两个桌面产品的账号/额度继承**未验证**，不互相冒充）：-p --output-format stream-json；--session-id 新建 / --resume 精确恢复（已实测）。带 --permission-mode bypass_permissions（该 CLI 词表是 snake_case，--help 实测；非交互不旁路则落不了盘；2026-10-16 统筹请求）',
+    command: 'C:\\Users\\Administrator\\.qodersec\\bin\\qoderclicn.exe',
+    args: ['--config-dir', join(ACCOUNTS_ROOT, 'qoder-cn-a'), '-p', '--permission-mode', 'bypass_permissions'],
+    promptViaStdin: true,
+    nativeCli: {
+      protocol: 'claude-stream-json',
+      newSessionArgs: ['--session-id', '{sessionId}'],
+      resumeArgs: ['--resume', '{sessionId}'],
+      outputArgs: ['--output-format', 'stream-json'],
+    },
+    order: ['headless'],
   }),
   target({
-    name: 'qoder-cn-app',
-    description: 'Qoder CN 桌面端；Electron 独立 App，聊天发送按钮通过 aria-label 定位。',
+    name: 'qoder-cn-ide',
+    description: 'Qoder CN IDE（独立桌面产品；bin/qodercn.cmd 会把 CLI 参数分流到桌面 IDE ⇒ 无等价低内存 headless 通道）。**不声明** nativeCli：本入口只做桌面 CDP/窗口派发；其账号/额度继承未验证，不与 qoder-cn-native 互相冒充',
     transport: 'cdp',
     order: ['cdp', 'window'],
-    command: 'D:\\Qoder CN\\Qoder CN.exe',
-    window: { process: 'Qoder CN.exe', title: '/^Qoder CN$/i' },
-    cdp: { launchArgs: ['--remote-debugging-port=<port>'], port: 9344, sendSelector: '[aria-label="发送消息"]' },
+    command: 'D:\\Qoder CNide\\Qoder CN IDE.exe',
+    window: { process: 'Qoder CN IDE.exe', title: '/Qoder CN IDE/i' },
+    cdp: { launchArgs: ['--remote-debugging-port=<port>'], port: 9346, pageMatch: 'lingma/agents-window' },
   }),
   target({
-    name: 'antigravity',
-    description: 'Antigravity IDE 2.18.1（Google；Electron）。实测界面可选 7 个模型：Gemini 3.8 Flash(High/Fast，当前) · 3.7 Flash(Medium) · 3.6 Flash(Medium) · 3.1 Pro(Low) · Claude Sonnet 4.6(Thinking) · Claude Opus 4.6(Thinking) · GPT-OSS 120B(Medium)；账号 <redacted>。CLI 版见 agy 目标',
-    transport: 'cdp',
-    order: ['cdp', 'window'],
-    command: 'C:\\Users\\Administrator\\AppData\\Local\\Programs\\antigravity\\Antigravity.exe',
-    window: { process: 'Antigravity.exe', title: '/Antigravity/i' },
-    cdp: { launchArgs: ['--remote-debugging-port=<port>'], port: 9337 },
-  }),
-  target({
-    name: 'minimax',
-    description: 'MiniMax Code 桌面端 3.1.0（稀宇；Electron）。自带 mavis CLI 的 shim 已失效',
-    transport: 'cdp',
-    order: ['cdp', 'window'],
-    command: 'D:\\minimax\\MiniMax Code\\MiniMax Code.exe',
-    window: { process: 'MiniMax Code.exe', title: '/MiniMax/i' },
-    cdp: { launchArgs: ['--remote-debugging-port=<port>'], port: 9338 },
-  }),
-  target({
-    name: 'grok',
-    description: 'Grok Bot 桌面端 0.29（Electron）。CLI 版见 grok-cli 目标',
-    transport: 'cdp',
-    order: ['cdp', 'window'],
-    command: 'D:\\Grok bot\\Grok Bot.exe',
-    window: { process: 'Grok Bot.exe', title: '/Grok/i' },
-    cdp: { launchArgs: ['--remote-debugging-port=<port>'], port: 9339 },
-  }),
-  target({
-    name: 'cursor',
-    description: 'Cursor IDE 3.11.13（VSCode fork）。实测无 agent 一次性模式（cursor agent 的 options 为空、也没有 cursor-agent），只能 GUI 操控',
-    transport: 'cdp',
-    order: ['cdp', 'window'],
-    command: 'D:\\cursor\\Cursor.exe',
-    window: { process: 'Cursor.exe', title: '/Cursor/i' },
-    cdp: { launchArgs: ['--remote-debugging-port=<port>'], port: 9341 },
+    name: 'antigravity-native',
+    description: 'Antigravity（agy CLI）：-p <prompt> --output-format stream-json；首轮由 CLI 生成 conversation id（mint），恢复用 --conversation <id>（明确会话 ID，**不用** --continue；两轮进程间恢复已实测）。⚠️ prompt 走 `-p` 内联（2026-10-16 现场实测：`-p` 是必须紧跟参数的旗标，原话 `flag needs an argument: -p`，**不接受** stdin）',
+    command: 'C:\\Users\\Administrator\\AppData\\Local\\agy\\bin\\agy.cmd',
+    args: [],
+    promptViaStdin: false,
+    nativeCli: {
+      protocol: 'agy-jsonl',
+      newSessionArgs: [],
+      resumeArgs: ['--conversation', '{sessionId}'],
+      outputArgs: ['--output-format', 'stream-json'],
+      promptArg: ['-p', '{prompt}'],
+    },
+    order: ['headless'],
   }),
 ]
 

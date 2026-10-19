@@ -1,0 +1,638 @@
+{
+  "$meta": {
+    "verifiedAgainst": "@deepseek-ai/dsh-desktop / @deepseek-ai/dsh-desktop-runtime 0.2.0-rc.2",
+    "buildCommit": "04f392c9ddd144fa426da2045178797da6db6c11",
+    "buildDirty": false,
+    "asar": "D:\\DeepSeek\\resources\\app.asar",
+    "extractionFreshness": "D:\\Project\\_dsh-asar\\host = 333/334 files byte-identical (SHA-256) to the live asar; host2 = 277/277; host3 = 200/201. Missing: dsh-client-ui-chat/lib/client.js. host3 difference: cordis/package.json (4 bytes).",
+    "runtimePathPrefix": "All /dsh/node_modules/@deepseek-ai/<pkg>/... paths below are inside the live asar; the ones marked extracted also exist under D:\\Project\\_dsh-asar\\host*.",
+    "staleCopiesNotUsed": [
+      "C:\\Users\\Administrator\\.dsh\\dist\\node_modules\\@deepseek-ai\\dsh (0.1.1-rc.1)",
+      "C:\\dsh\\node_modules\\@deepseek-ai\\dsh (0.2.0-rc.1)",
+      "D:\\Project\\deepseek-harness-master\\deepseek-harness-master (0.1.0-rc.8)"
+    ],
+    "clientInspectAvailability": "Client inspect providers (Slots/Service/Event/Builtin/Theme) timed out ('Client inspect query ... timed out after 10000ms'). Client slot facts are verified from byte-identical rc.2 client bundles + the build-generated slot catalogue, not from a live topology dump.",
+    "primaryGeneratedCatalogues": {
+      "clientSlotCatalogue": "/dsh/node_modules/@deepseek-ai/dsh-cordis-client-runner/lib/client.js (90 declared slots; kind/scope/doc/registerOptions/ownerProps/declaredBy/source)",
+      "hostApiCatalogue": "D:\\Project\\_dsh-asar\\host2\\dsh-tool-cordis\\lib\\types\\api-catalog.js"
+    }
+  },
+  "slots": {
+    "settings.section": {
+      "package": "@deepseek-ai/dsh-client-ui-settings-general",
+      "file": "/dsh/node_modules/@deepseek-ai/dsh-client-ui-settings-general/lib/client.js",
+      "line": 1136,
+      "kind": "list",
+      "scope": "root",
+      "verdict": "supported",
+      "evidenceQuote": "\"settings.section\": {\n\tkind: \"list\",\n\tscope: \"root\"\n}",
+      "notes": "Declared in the children table of the sidebar.settings entry (lines 1111-1146). Type contract source per generated slot catalogue: packages/client/ui-settings/src/client/contract/slots.ts:57. Owner render props: { close } at .../settings-general/lib/client.js:337 ('renderSlot(\"settings.section\", { close: onClose }, { only: active })'). Register options: id (required), order?, label?."
+    },
+    "settings.plugins.tab": {
+      "package": "@deepseek-ai/dsh-client-ui-settings-plugins",
+      "file": "/dsh/node_modules/@deepseek-ai/dsh-client-ui-settings-plugins/lib/client.js",
+      "line": 208,
+      "kind": "list",
+      "scope": "root",
+      "verdict": "supported",
+      "evidenceQuote": "children: { \"settings.plugins.tab\": {\n\tkind: \"list\",\n\tscope: \"root\"\n} }",
+      "notes": "Declared as a child of the 'plugins' settings.section entry (register call at line 201). Owner render props: none — renderSlot(\"settings.plugins.tab\", {}, { only: single.id }) at lines 68 and 124. Catalogue source: packages/client/ui-settings/src/client/contract/slots.ts:66."
+    },
+    "settings.plugins.item": {
+      "package": "n/a",
+      "file": "n/a",
+      "line": null,
+      "kind": null,
+      "scope": null,
+      "verdict": "unsupported",
+      "evidenceQuote": "asar-wide regex 'settings\\.plugins\\.item' over every /dsh/node_modules/@deepseek-ai/**/*.js: 0 matches; the generated client slot catalogue contains no such key.",
+      "notes": "THIS KEY DOES NOT EXIST in 0.2.0-rc.2. The real per-plugin settings/config card seat is 'plugins.item' (see below). A prior assumption naming settings.plugins.item is wrong for this build."
+    },
+    "plugins.item": {
+      "package": "@deepseek-ai/dsh-client-ui-plugin-manager",
+      "file": "/dsh/node_modules/@deepseek-ai/dsh-client-ui-plugin-manager/lib/client.js",
+      "line": 3725,
+      "kind": "list",
+      "scope": "root",
+      "verdict": "supported",
+      "evidenceQuote": "\"plugins.item\": {\n\tkind: \"list\",\n\tscope: \"root\"\n}",
+      "notes": "Declared by the 'main' panel entry (register at line 3718). Occupied by the official settings pages; owner render props { view: 'summary' } / page body, dispatched with { only: item.id } at lines 2266, 2322, 2330. Catalogue source: packages/client/ui-plugin-manager/src/client/slot-contract.ts:88. host/dsh-client-ui-settings-shell/lib/client.js:182 and host/dsh-client-ui-settings-subagent/lib/client.js:839 inject into it."
+    },
+    "settings.general.item": {
+      "package": "@deepseek-ai/dsh-client-ui-settings-general",
+      "file": "/dsh/node_modules/@deepseek-ai/dsh-client-ui-settings-general/lib/client.js",
+      "line": 1177,
+      "kind": "list",
+      "scope": "root",
+      "verdict": "supported",
+      "evidenceQuote": "children: { \"settings.general.item\": {\n\tkind: \"list\",\n\tscope: \"root\"\n} }",
+      "notes": "Declared as a child of the 'general' settings.section entry (register at line 1171). Owner render props: NONE — renderSlot(\"settings.general.item\", {}) at line 638; catalogue doc: 'the owner passes no props at all'. Catalogue source: packages/client/ui-settings/src/client/contract/slots.ts:92."
+    },
+    "settings.onboarding": {
+      "package": "@deepseek-ai/dsh-client-ui-settings-general",
+      "file": "/dsh/node_modules/@deepseek-ai/dsh-client-ui-settings-general/lib/client.js",
+      "line": 1140,
+      "kind": "list",
+      "scope": "root",
+      "verdict": "supported",
+      "evidenceQuote": "\"settings.onboarding\": {\n\tkind: \"list\",\n\tscope: \"root\"\n}",
+      "notes": "Owner render props: { stepId, explicit, complete, openSection } with { only: onboardingStep.id } at lines 489-496. Catalogue source: packages/client/ui-settings/src/client/contract/slots.ts:77. Shipped occupants: welcome-notice (order -100, non-desktop only) and deepseek-official (order 0) at .../settings-models/lib/client.js:4076-4091."
+    },
+    "settings.models": {
+      "package": "n/a",
+      "file": "n/a",
+      "line": null,
+      "kind": null,
+      "scope": null,
+      "verdict": "unsupported",
+      "evidenceQuote": "The only literal \"settings.models\" in the build is the i18n/config namespace: const NS = \"settings.models\"; (/dsh/node_modules/@deepseek-ai/dsh-client-ui-settings-models/lib/client.js:3976). The generated client slot catalogue has no bare 'settings.models' key.",
+      "notes": "There is no settings.models slot. Only the three namespaced children below exist."
+    },
+    "settings.models.provider-card": {
+      "package": "@deepseek-ai/dsh-client-ui-settings-models",
+      "file": "/dsh/node_modules/@deepseek-ai/dsh-client-ui-settings-models/lib/client.js",
+      "line": 4066,
+      "kind": "keyed",
+      "scope": "root",
+      "verdict": "supported",
+      "evidenceQuote": "\"settings.models.provider-card\": {\n\tkind: \"keyed\",\n\tscope: \"root\"\n}",
+      "notes": "Child of the 'models' settings.section entry (register at line 4059). Dispatched with entryKey = settingsNs; owner props = ProviderCardExtrasOwnerProps { provider: ProviderDirectoryEntry, ... } (generated slot catalogue). Catalogue source: packages/client/ui-settings-models/src/client/slot-contract.ts:33."
+    },
+    "settings.models.footer": {
+      "package": "@deepseek-ai/dsh-client-ui-settings-models",
+      "file": "/dsh/node_modules/@deepseek-ai/dsh-client-ui-settings-models/lib/client.js",
+      "line": 4070,
+      "kind": "list",
+      "scope": "root",
+      "verdict": "supported",
+      "evidenceQuote": "\"settings.models.footer\": {\n\tkind: \"list\",\n\tscope: \"root\"\n}",
+      "notes": "Rendered as renderSlot(\"settings.models.footer\", {}) at line 2368. Catalogue doc: 'Ordered extension area after the provider rows and the add controls. Without a registrant the area renders nothing.' Source: packages/client/ui-settings-models/src/client/slot-contract.ts:40."
+    },
+    "settings.models.sign-in": {
+      "package": "@deepseek-ai/dsh-client-ui-settings-models",
+      "file": "/dsh/node_modules/@deepseek-ai/dsh-client-ui-settings-models/lib/client.js",
+      "line": 4085,
+      "kind": "single",
+      "scope": "root",
+      "verdict": "supported",
+      "evidenceQuote": "children: { \"settings.models.sign-in\": {\n\tkind: \"single\",\n\tscope: \"root\"\n} }",
+      "notes": "Declared as a child of the deepseek-official settings.onboarding entry (register at line 4082). ownerProps: [] (none). Rendered at line 2560. Source: packages/client/ui-settings-models/src/client/slot-contract.ts:35."
+    },
+    "conversation.composer": {
+      "package": "@deepseek-ai/dsh-client-ui-conversation",
+      "file": "/dsh/node_modules/@deepseek-ai/dsh-client-ui-conversation/lib/client.js",
+      "line": 18159,
+      "kind": "chain",
+      "scope": "session",
+      "verdict": "supported",
+      "evidenceQuote": "\"conversation.composer\": {\n\tkind: \"chain\",\n\tscope: \"session\"\n}",
+      "notes": "Selector-elected whole-composer replacement (register({select}) required); declared by factory 'conversation.content'. Rendered via renderSlotChain(\"conversation.composer\", {...}, { fallback: composerBar, fallbackOnly: sessionId === void 0, overlay: true }) at line 16313. Source: packages/client/ui-conversation/src/client/contract/slots.ts:187."
+    },
+    "conversation.composer.bar": {
+      "package": "@deepseek-ai/dsh-client-ui-conversation",
+      "file": "/dsh/node_modules/@deepseek-ai/dsh-client-ui-conversation/lib/client.js",
+      "line": 18293,
+      "kind": "single",
+      "scope": "session-maybe",
+      "verdict": "supported",
+      "evidenceQuote": "const registerComposerBar = () => slots.register({\n\t\t\t\tname: \"conversation.composer.bar\",",
+      "notes": "The owner entry that DECLARES every conversation.input.* seat (children table at lines 18296-18333). single + session-maybe, so its children exist whenever a conversation bar is mounted."
+    },
+    "conversation.input.model": {
+      "package": "@deepseek-ai/dsh-client-ui-conversation",
+      "file": "/dsh/node_modules/@deepseek-ai/dsh-client-ui-conversation/lib/client.js",
+      "line": 18321,
+      "kind": "single",
+      "scope": "session",
+      "verdict": "supported",
+      "evidenceQuote": "\"conversation.input.model\": {\n\tkind: \"single\",\n\tscope: \"session\"\n}",
+      "notes": "Owner props: InputControlOwnerProps { locked: boolean } — renderSlot(\"conversation.input.model\", { locked: modelSeatLocked }) at line 17532; declaration in generated slot catalogue (source packages/client/ui-conversation/src/client/contract/slots.ts:223). Shipped occupant: @deepseek-ai/dsh-client-ui-model-selection (inject at host/dsh-client-ui-model-selection/lib/client.js:1248)."
+    },
+    "conversation.input.model.collision": {
+      "package": "@deepseek-ai/dsh-client-ui-slots",
+      "file": "D:\\Project\\_dsh-asar\\host\\dsh-client-ui-slots\\lib\\index.js",
+      "line": 170,
+      "kind": "single",
+      "verdict": "supported",
+      "evidenceQuote": "case \"single\": {\n\tconst occupant = rec.entries.find((e) => (e.options.priority ?? 0) === priority);\n\tif (occupant) throw new Error(`single slot \"${options.name}\" already has a registration ${occupantHint(occupant)}`);\n\tbreak;\n}",
+      "notes": "Conflict rule: same priority => THROWS at registration. Different priority => accepted and shadowed; LOWEST priority wins (occupantHint at line 168: 'register at a different priority to shadow it (lowest renders)'; ascending sort at line 221; entriesOfSlot returns the first live entry per cell at lines 278-293). A render crash can abdicate the winner via reportEntryError (lines 455-463)."
+    },
+    "conversation.input.left": {
+      "package": "@deepseek-ai/dsh-client-ui-conversation",
+      "file": "/dsh/node_modules/@deepseek-ai/dsh-client-ui-conversation/lib/client.js",
+      "line": 18309,
+      "kind": "list",
+      "scope": "session",
+      "verdict": "supported",
+      "evidenceQuote": "\"conversation.input.left\": {\n\tkind: \"list\",\n\tscope: \"session\"\n}",
+      "notes": "Owner render props: none — renderSlot(\"conversation.input.left\", {}) at line 17524, after the permission/plan modes block inside the composer tool row. Catalogue doc: 'Compact controls at the left of the composer tool row.'"
+    },
+    "conversation.input.right": {
+      "package": "@deepseek-ai/dsh-client-ui-conversation",
+      "file": "/dsh/node_modules/@deepseek-ai/dsh-client-ui-conversation/lib/client.js",
+      "line": 18317,
+      "kind": "list",
+      "scope": "session",
+      "verdict": "supported",
+      "evidenceQuote": "\"conversation.input.right\": {\n\tkind: \"list\",\n\tscope: \"session\"\n}",
+      "notes": "Owner render props: none — renderSlot(\"conversation.input.right\", {}) at line 17532, inside standardControls before conversation.input.model. Catalogue doc: 'Compact controls before the composer submit action.'"
+    },
+    "conversation.input.overlay": {
+      "package": "@deepseek-ai/dsh-client-ui-conversation",
+      "file": "/dsh/node_modules/@deepseek-ai/dsh-client-ui-conversation/lib/client.js",
+      "line": 18301,
+      "kind": "list",
+      "scope": "session",
+      "verdict": "supported",
+      "evidenceQuote": "\"conversation.input.overlay\": {\n\tkind: \"list\",\n\tscope: \"session\"\n}",
+      "notes": "Owner render props: none — renderSlot(\"conversation.input.overlay\", {}) at line 17452, first child of the composer card inside the overlayAnchor div. Catalogue doc: 'Floating entries rendered inside the resident composer card.' Shipped injector: ui-input-trigger (host2/dsh-client-ui-input-trigger/lib/client.js:1261)."
+    },
+    "conversation.input.dock": {
+      "package": "@deepseek-ai/dsh-client-ui-conversation",
+      "file": "/dsh/node_modules/@deepseek-ai/dsh-client-ui-conversation/lib/client.js",
+      "line": 18167,
+      "kind": "list",
+      "scope": "session",
+      "verdict": "supported",
+      "evidenceQuote": "\"conversation.input.dock\": {\n\tkind: \"list\",\n\tscope: \"session\"\n}",
+      "notes": "Declared by factory 'conversation.content'. Rendered ABOVE the composer card: zone !== void 0 && renderSlot(\"conversation.input.dock\", zone) at line 16309 inside composerStack. Catalogue doc: 'Full-width entries above the composer card.' Register options id/order/label."
+    },
+    "conversation.composer.dock": {
+      "package": "@deepseek-ai/dsh-client-ui-conversation",
+      "file": "/dsh/node_modules/@deepseek-ai/dsh-client-ui-conversation/lib/client.js",
+      "line": 18329,
+      "kind": "list",
+      "scope": "session",
+      "verdict": "supported",
+      "evidenceQuote": "\"conversation.composer.dock\": {\n\tkind: \"list\",\n\tscope: \"session\"\n}",
+      "notes": "DISTINCT from conversation.input.dock; declared by an entry in conversation.composer.bar. Owner render props: none — variant === \"composer\" && input !== void 0 && sessionId !== void 0 ? renderSlot(\"conversation.composer.dock\", {}) : null at line 17615 (inside/below the card). Catalogue doc: 'Ambient entries below the composer card.' Source: packages/client/ui-conversation/src/client/contract/slots.ts:199."
+    },
+    "conversation.input.attachments": {
+      "package": "@deepseek-ai/dsh-client-ui-conversation",
+      "file": "/dsh/node_modules/@deepseek-ai/dsh-client-ui-conversation/lib/client.js",
+      "line": 18297,
+      "kind": "single",
+      "scope": "session-maybe",
+      "verdict": "supported",
+      "evidenceQuote": "\"conversation.input.attachments\": {\n\tkind: \"single\",\n\tscope: \"session-maybe\"\n}",
+      "notes": "Occupied by the shipped attachment bar; props { attachments, canAcceptDrop, onAddFiles, onRemoveAttachment, uploads, onRetryFile, dropLimits } at lines 17458-17472."
+    },
+    "conversation.input.permission": {
+      "package": "@deepseek-ai/dsh-client-ui-conversation",
+      "file": "/dsh/node_modules/@deepseek-ai/dsh-client-ui-conversation/lib/client.js",
+      "line": 18305,
+      "kind": "single",
+      "scope": "session",
+      "verdict": "supported",
+      "evidenceQuote": "\"conversation.input.permission\": {\n\tkind: \"single\",\n\tscope: \"session\"\n}",
+      "notes": "Owner props { locked } at line 17522; shipped occupant @deepseek-ai/dsh-client-ui-permission-presets (host/dsh-client-ui-permission-presets/lib/client.js:815)."
+    },
+    "conversation.input.plan": {
+      "package": "@deepseek-ai/dsh-client-ui-conversation",
+      "file": "/dsh/node_modules/@deepseek-ai/dsh-client-ui-conversation/lib/client.js",
+      "line": 18313,
+      "kind": "single",
+      "scope": "session",
+      "verdict": "supported",
+      "evidenceQuote": "\"conversation.input.plan\": {\n\tkind: \"single\",\n\tscope: \"session\"\n}",
+      "notes": "Owner props { locked } at line 17522."
+    },
+    "conversation.input.activity": {
+      "package": "@deepseek-ai/dsh-client-ui-conversation",
+      "file": "/dsh/node_modules/@deepseek-ai/dsh-client-ui-conversation/lib/client.js",
+      "line": 18325,
+      "kind": "single",
+      "scope": "session",
+      "verdict": "supported",
+      "evidenceQuote": "\"conversation.input.activity\": {\n\tkind: \"single\",\n\tscope: \"session\"\n}",
+      "notes": "Owner props { locked, onActiveChange } at line 17536."
+    },
+    "tool.call.toolview": {
+      "package": "@deepseek-ai/dsh-client-ui-tool",
+      "file": "/dsh/node_modules/@deepseek-ai/dsh-client-ui-tool/lib/client.js",
+      "line": 4558,
+      "kind": "keyed",
+      "scope": "session",
+      "verdict": "supported",
+      "evidenceQuote": "children: { \"tool.call.toolview\": { kind: \"keyed\", scope: \"session\", inject: { hooks: { toolCallArgumentsPartial: bindToolCallArgumentsPartial } } }",
+      "notes": "Declared by an entry in 'conversation.chat.node'. EXECUTION-CARD seat: register with key = wire tool name. Owner props = ToolCallOwnerProps (ToolCallCommonProps & phase union): { useDisclosure, callId, toolName, cwd?, home?, openFile, loadImage, inspect? } + { phase: 'preparing'|'start'|'result', block }. Source packages/client/ui-tool/src/client/contract/slots.ts:26. Shipped occupants: many DetailsRow/SearchRow/... registrations plus 3rd-party keys (cordis_*, present, skill)."
+    },
+    "sidebar.session.row.leading": {
+      "package": "@deepseek-ai/dsh-client-ui-workspace",
+      "file": "/dsh/node_modules/@deepseek-ai/dsh-client-ui-workspace/lib/client.js",
+      "line": null,
+      "kind": "list",
+      "scope": "root",
+      "verdict": "supported",
+      "evidenceQuote": "generated client slot catalogue: key: \"sidebar.session.row.leading\", kind: \"list\", scope: \"root\", doc: 'Leading decoration of one Session row, in the 16px cell before the title ...' (source packages/client/ui-workspace/src/client/contract/slots.ts:129)",
+      "notes": "SESSION-CARD metadata/decoration seat. Line number not resolved: the declaring package (dsh-client-ui-workspace) is NOT in the extracted tree, so only the generated catalogue entry was read (from the asar). Also available: sidebar.session.row.hover (list/root), sidebar.workspaces.session.row.action (list/root), sidebar.workspaces.session.menu.item (list/root)."
+    },
+    "conversation.chat.turnTail": {
+      "package": "@deepseek-ai/dsh-client-ui-chat",
+      "file": "/dsh/node_modules/@deepseek-ai/dsh-client-ui-chat/lib/client.js",
+      "line": null,
+      "kind": "list",
+      "scope": "session",
+      "verdict": "supported",
+      "evidenceQuote": "generated client slot catalogue: key: \"conversation.chat.turnTail\", kind: \"list\", scope: \"session\", doc: 'Ordered feature contributions before a completed Turn\\'s action row.' (source packages/client/ui-chat/src/client/contract/slots.ts:315)",
+      "notes": "TURN/execution card seat; declared by an entry in 'conversation.chat.node'. Line number not resolved because dsh-client-ui-chat/lib/client.js was the one extraction gap (565,053 B) and was not re-extracted. Sibling: conversation.chat.assistant-actions (list/session)."
+    }
+  },
+  "clientInspectProvider": {
+    "platform": "client",
+    "provider": "Slots",
+    "method": "listSubTree",
+    "verdict": "conditional",
+    "evidenceQuote": "Slots.listSubTree: Client inspect query Slots.listSubTree timed out after 10000ms. Open or reconnect the Harness page, then retry.",
+    "notes": "Registered and listed by cordis_inspect_list, but no responsive page answered during this session (tried with root='conversation.input.model' and with no root). Live slot topology therefore unconfirmed; the generated catalogue inside the client runner was used instead."
+  },
+  "modelSelection": {
+    "slot": "conversation.input.model",
+    "props": {
+      "declaration": "export interface InputControlOwnerProps {\n  /** Whether the composer currently refuses interaction. */\n  locked: boolean\n}",
+      "verdict": "supported",
+      "evidenceQuote": "renderSlot(\"conversation.input.model\", { locked: modelSeatLocked })",
+      "file": "/dsh/node_modules/@deepseek-ai/dsh-client-ui-conversation/lib/client.js",
+      "line": 17532
+    },
+    "selectCallPath": {
+      "package": "@deepseek-ai/dsh-client-ui-model-selection",
+      "file": "/dsh/node_modules/@deepseek-ai/dsh-client-ui-model-selection/lib/client.js",
+      "line": 246,
+      "verdict": "supported",
+      "evidenceQuote": "const result = await this.sessions.selectModel({\n\tsessionId: this.sessionId,\n\tprovider: selection.provider,\n\tmodel: selection.model,\n\t...selection.reasoningEffort === void 0 ? {} : { reasoningEffort: selection.reasoningEffort }\n});",
+      "notes": "Reached from async select(selection) at line 235. The occupant's { available, directory, load, select } face is that occupant's OWN inject face (lines 1251-1262), NOT part of the slot contract — a replacement occupant receives only { locked } and must supply its own data path."
+    },
+    "hostRemote": {
+      "file": "D:\\Project\\_dsh-asar\\host2\\dsh-tool-cordis\\lib\\types\\api-catalog.js",
+      "line": 1873,
+      "verdict": "supported",
+      "evidenceQuote": "@Remote('selectModel') selectModel(request: SessionSelectModelRequest): Promise<SessionSelectModelValue>",
+      "notes": "SessionSelectModelRequest extends ModelSelection { sessionId } (line 6776); SessionSelectModelValue { selected: ModelSelection } (line 6780)."
+    },
+    "ModelSelection": {
+      "file": "D:\\Project\\_dsh-asar\\host\\dsh-permission-presets\\lib\\typert.host.js",
+      "line": 390,
+      "verdict": "supported",
+      "evidenceQuote": "export interface ModelSelection {\n    readonly provider: string;\n    readonly model: string;\n    readonly reasoningEffort?: string;\n}",
+      "notes": "Identical declaration in host/dsh-subagent/lib/typert.host.js:554-555, host2/dsh-agent-preset-registry/lib/typert.host.js:558-559, host3/dsh-cordis-host-runner/lib/typert.host.js:1204-1205. reasoningEffort is optional and typed as string here (the branded ReasoningEffortId is the compile-time form)."
+    }
+  },
+  "subagents": {
+    "registerProvider": {
+      "package": "@deepseek-ai/dsh-subagent",
+      "file": "/dsh/node_modules/@deepseek-ai/dsh-subagent/lib/types/index.js",
+      "line": 429,
+      "verdict": "supported",
+      "evidenceQuote": "registerProvider(provider: SubagentProvider): () => void",
+      "notes": "Live Host inspect of service 'subagents' returns exactly this signature: 'Register a provider under its name. Registration is effect-scoped and HMR safe; removing a provider blocks new starts but does not revoke runs that were already returned to their holders.' Found in the SubagentRuntime class declaration at host2/dsh-tool-cordis/lib/types/api-catalog.js:7224."
+    },
+    "SubagentProvider": {
+      "file": "D:\\Project\\_dsh-asar\\host2\\dsh-tool-cordis\\lib\\types\\api-catalog.js",
+      "line": 7200,
+      "verdict": "supported",
+      "evidenceQuote": "export interface SubagentProvider {\n    readonly name: string;\n    readonly capabilities: SubagentCapabilities;\n    readonly inheritsParentContext: boolean;\n    readonly agentRouteDefaults?: Readonly<{\n        provider: string;\n        model: string;\n    }>;\n    start(request: ResolvedSubagentStartRequest): Promise<SubagentRun>;\n    prepareContinuable?(request: ContinuableCreateRequest): Promise<ContinuableCreateSpec>;\n}",
+      "notes": "Cross-checked identical against the live Host inspect of service 'subagents'."
+    },
+    "SubagentCapabilities": {
+      "file": "D:\\Project\\_dsh-asar\\host2\\dsh-tool-cordis\\lib\\types\\api-catalog.js",
+      "line": 7156,
+      "verdict": "supported",
+      "evidenceQuote": "export interface SubagentCapabilities {\n    readonly agentOptions: boolean;\n    readonly outputSchema: boolean;\n    readonly depthLimit: boolean;\n    readonly toolFilter: boolean;\n    readonly persona: boolean;\n}",
+      "notes": "All five are required booleans; no partial advertisement."
+    },
+    "capabilityEnforcement": {
+      "package": "@deepseek-ai/dsh-subagent",
+      "file": "D:\\Project\\_dsh-asar\\host\\dsh-subagent\\lib\\types\\index.js",
+      "line": 457,
+      "verdict": "supported",
+      "evidenceQuote": "assertCapabilities(provider, request) {\n    const needs = [\n        { when: request.agentOptions !== undefined, cap: 'agentOptions' },\n        { when: request.outputSchema !== undefined, cap: 'outputSchema' },\n        { when: request.maxDepth !== undefined, cap: 'depthLimit' },\n        { when: request.toolFilter !== undefined, cap: 'toolFilter' },\n        { when: request.persona !== undefined, cap: 'persona' },\n    ];\n    for (const { when, cap } of needs) {\n        if (when && !provider.capabilities[cap]) {\n            throw new SubagentError(`subagent provider \"${provider.name}\" does not support the \"${cap}\" capability`, 'UNSUPPORTED_CAPABILITY');\n        }\n    }\n}",
+      "notes": "Runtime copy at host/dsh-subagent/lib/index.js:3176-3196. Tool layer additionally rejects config.agentOptions / model selection for such a provider: host/dsh-tool-subagent/lib/index.js:377-379."
+    },
+    "NO_START_CAPABILITIES": {
+      "package": "@deepseek-ai/dsh-subagent",
+      "file": "D:\\Project\\_dsh-asar\\host\\dsh-subagent\\lib\\types\\out-of-process.js",
+      "line": 49,
+      "verdict": "conditional",
+      "evidenceQuote": "/**\n * The capability advertisement of an out-of-process backend: NONE. A child in\n * another process cannot honor parent-enforced start features\n * (`agentOptions`/`outputSchema`/`maxDepth`/`toolFilter`/`persona`), so the service rejects a\n * request needing any of them before `start` runs — never accepted-then-ignored.\n */\nexport const NO_START_CAPABILITIES = Object.freeze({\n    agentOptions: false,\n    outputSchema: false,\n    depthLimit: false,\n    toolFilter: false,\n    persona: false,\n});",
+      "notes": "ANSWER to 'is agentOptions=false REQUIRED for out-of-process?': NO, not enforced — assertCapabilities is capability-agnostic. Shipping this constant is the seam's documented advertisement; a provider that declares agentOptions:true must honour the override itself, because agentOptions is delivered to the provider inside ResolvedSubagentStartRequest. Both shipped IN-PROCESS providers declare agentOptions:true (host2/dsh-subagent-spawn-in-process/lib/index.js:24, host2/dsh-subagent-fork-in-process/lib/index.js:38). NO out-of-process subagent backend is installed in this build (no dsh-subagent-acp / SDK / codex / claude-code provider package among the 289 @deepseek-ai dirs)."
+    },
+    "resolveChildCwd": {
+      "file": "D:\\Project\\_dsh-asar\\host\\dsh-subagent\\lib\\types\\out-of-process.js",
+      "line": 137,
+      "verdict": "supported",
+      "evidenceQuote": "export function resolveChildCwd(prefix, configured, parentCwd) {\n    if (configured !== undefined)\n        return configured;\n    if (parentCwd === undefined) {\n        throw new Error(`${prefix}: no working directory for the child — configure \\`cwd\\` or delegate from a parent session that has one`);\n    }\n    return assertUsableCwd(prefix, 'parent session cwd', parentCwd);\n}",
+      "notes": "Re-exported from host/dsh-subagent/lib/index.js:3201."
+    },
+    "settleRunResult": {
+      "file": "D:\\Project\\_dsh-asar\\host\\dsh-subagent\\lib\\types\\out-of-process.js",
+      "line": 163,
+      "verdict": "supported",
+      "evidenceQuote": "export async function settleRunResult(parts) {\n    try {\n        const result = await parts.attempt();\n        return parts.cancelled()\n            ? { output: parts.collectOutput(), stopReason: 'aborted' }\n            : normalizeSubagentDiagnostic(result);\n    }",
+      "notes": "'result never rejects after publication': rejection flattens to stopReason 'error' (or 'aborted' when cancellation already settled). Diagnostic capped at MAX_SUBAGENT_DIAGNOSTIC_BYTES = 4_096 (line 16)."
+    },
+    "subprocessRunHandle": {
+      "file": "D:\\Project\\_dsh-asar\\host\\dsh-subagent\\lib\\types\\out-of-process.js",
+      "line": 203,
+      "verdict": "supported",
+      "evidenceQuote": "export function subprocessRunHandle(parts) {\n    let disposal;\n    return {\n        id: parts.id,\n        localAgent: undefined,\n        result: parts.result,\n        dispose() {\n            if (disposal !== undefined)\n                return disposal;\n            parts.signal.removeEventListener('abort', parts.onAbort);\n            parts.requestCancel();\n            disposal = parts.teardown();\n            return disposal;\n        },\n    };\n}",
+      "notes": "localAgent is undefined for remote runs; dispose() is the idempotent cancellation + teardown path."
+    }
+  },
+  "cancellationAndResumption": {
+    "SubagentStartRequest.signal": {
+      "file": "D:\\Project\\_dsh-asar\\host2\\dsh-tool-cordis\\lib\\types\\api-catalog.js",
+      "line": 7232,
+      "verdict": "supported",
+      "evidenceQuote": "export interface SubagentStartRequest {\n    readonly label?: string;\n    readonly prompt: ContentBlock[];\n    readonly parent: Agent;\n    readonly signal: AbortSignal;\n    readonly agentOptions?: AgentOptions;\n    readonly outputSchema?: ObjectJsonSchema;\n    readonly maxDepth?: number;\n    readonly toolFilter?: ToolRestriction;\n    readonly persona?: string;\n}",
+      "notes": "Cancellation is the request AbortSignal. There is NO cancel() method on SubagentProvider, SubagentRun, or the subagents service."
+    },
+    "SubagentRun.dispose": {
+      "file": "D:\\Project\\_dsh-asar\\host2\\dsh-tool-cordis\\lib\\types\\api-catalog.js",
+      "line": 7208,
+      "verdict": "supported",
+      "evidenceQuote": "export interface SubagentRun {\n    readonly id: SessionId;\n    readonly localAgent: Agent | undefined;\n    readonly result: Promise<SubagentResult>;\n    dispose(): Promise<void>;\n}",
+      "notes": "dispose() is the only teardown verb in the run contract; service-level stopping is interrupt(targetSessionId, authority) / interruptByParent(childSessionId, parentSessionId, 'continuable')."
+    },
+    "ContinuableCreateRequest": {
+      "file": "D:\\Project\\_dsh-asar\\host2\\dsh-tool-cordis\\lib\\types\\api-catalog.js",
+      "line": 4795,
+      "verdict": "supported",
+      "evidenceQuote": "export interface ContinuableCreateRequest {\n    readonly sessionId: SessionId;\n    readonly parent: Agent;\n    readonly signal: AbortSignal;\n}",
+      "notes": "Argument of the optional provider method prepareContinuable(request) -> ContinuableCreateSpec { seed? }."
+    },
+    "startContinuable": {
+      "file": "D:\\Project\\_dsh-asar\\host2\\dsh-tool-cordis\\lib\\types\\api-catalog.js",
+      "line": 7224,
+      "verdict": "supported",
+      "evidenceQuote": "async startContinuable(spec: ContinuableStartSpec): Promise<ContinuableStart>;",
+      "notes": "ContinuableStartSpec { provider, label, childId?, request, signal } (api-catalog.js:4807); resolves { childId, messageId }. Provider must implement prepareContinuable or startContinuable throws SubagentError UNSUPPORTED_CAPABILITY (host/dsh-subagent/lib/index.js:3151, mirrored at lib/types/index.js:429-430)."
+    },
+    "sendMessage": {
+      "file": "D:\\Project\\_dsh-asar\\host2\\dsh-tool-cordis\\lib\\types\\api-catalog.js",
+      "line": 7224,
+      "verdict": "supported",
+      "evidenceQuote": "async sendMessage(sender: Agent, targetId: SessionId, content: ContentBlock[], options: SubagentSendMessageOptions): Promise<MessageId>;",
+      "notes": "SubagentSendMessageOptions = { readonly signal: AbortSignal } (api-catalog.js:7228). Live inspect: 'Steer one model-authored message to the sender's direct parent or direct continuable child ... an idle target starts a turn, and an absent direct child cold-resumes from persistence.'"
+    }
+  },
+  "agentTeams": {
+    "providerSelection": {
+      "package": "@deepseek-ai/dsh-experimental-tool-agent-team",
+      "file": "D:\\Project\\_dsh-asar\\host\\dsh-experimental-tool-agent-team\\lib\\index.js",
+      "line": 16,
+      "verdict": "supported",
+      "evidenceQuote": "const Config = z.object({\n\tfreshProvider: z.string().default(\"spawn\"),\n\tforkProvider: z.string().default(\"fork\")\n});",
+      "notes": "Selection at line 290: 'provider: context === \"fork\" ? config.forkProvider : config.freshProvider' with 'const context = args.context ?? \"fresh\"' at line 270. Teammates are therefore created BY PROVIDER NAME."
+    },
+    "SpawnTeammateRequest": {
+      "file": "D:\\Project\\_dsh-asar\\host2\\dsh-tool-cordis\\lib\\types\\api-catalog.js",
+      "line": 7040,
+      "verdict": "supported",
+      "evidenceQuote": "export interface SpawnTeammateRequest {\n    readonly name: string;\n    readonly description: string;\n    readonly prompt: ContentBlock[];\n    readonly context: 'fresh' | 'fork';\n    readonly provider: string;\n    readonly signal: AbortSignal;\n}",
+      "notes": "No model/persona field: the member's model comes from the provider route, not from the spawn request."
+    },
+    "roleModel": {
+      "file": "D:\\Project\\_dsh-asar\\host2\\dsh-tool-cordis\\lib\\types\\api-catalog.js",
+      "line": 7352,
+      "verdict": "supported",
+      "evidenceQuote": "export interface TeamMembership {\n    readonly root: Agent;\n    readonly id: TeamId;\n    readonly role: 'lead' | 'teammate';\n    readonly name: string;\n}",
+      "notes": "Lead construction: host/dsh-experimental-agent-team/lib/types/roster.js:81,90 -> \"return { root: agent, id: TeamId(agent.id), role: 'lead', name: 'lead' };\". Runtime membership gate compares immutable identity fields (name/provider/context) at host/dsh-experimental-agent-team/lib/index.js:1302-1303."
+    },
+    "TeamMemberView": {
+      "file": "D:\\Project\\_dsh-asar\\host2\\dsh-tool-cordis\\lib\\types\\api-catalog.js",
+      "line": 7356,
+      "verdict": "supported_closed",
+      "evidenceQuote": "export interface TeamMemberView {\n    readonly id: SessionId;\n    readonly name: string;\n    readonly role: 'lead' | 'teammate';\n    readonly status: 'running' | 'inactive' | 'provisioning' | 'failed';\n    readonly description?: string;\n    readonly provider?: string;\n    readonly context?: 'fresh' | 'fork';\n    readonly model?: string;\n    readonly diagnostics: string[];\n}",
+      "notes": "CLOSED, not extensible: no index signature and no contribution API. Two independent runtime gates reject extra columns: (1) persisted snapshot schema .strict() at host/dsh-experimental-agent-team/lib/index.js:1146-1158; (2) model-facing MEMBER_VIEW_SCHEMA with additionalProperties:false at host/dsh-experimental-tool-agent-team/lib/index.js:35-71 (target = member name; modelMember renames id->target at lines 72-79). Adding a column requires a core change in BOTH packages."
+    }
+  },
+  "llm": {
+    "registerAdapter": {
+      "package": "@deepseek-ai/dsh-llm",
+      "file": "D:\\Project\\_dsh-asar\\host\\dsh-llm\\lib\\index.js",
+      "line": 1833,
+      "verdict": "supported",
+      "evidenceQuote": "registerAdapter(providers, adapter) {",
+      "notes": "Live inspect: 'Register an adapter for the given provider routes. Throws LlmError with code DUPLICATE_ADAPTER if any provider already has an adapter (all-or-nothing). Disposed with the fiber.' Returns AdapterRegistrationHandle { (): void; replace(providers: string[]): void }. Disposer bound at line 1845 to 'llm.registerAdapter()'."
+    },
+    "LlmAdapter": {
+      "package": "@deepseek-ai/dsh-llm",
+      "file": "D:\\Project\\_dsh-asar\\host\\dsh-llm\\lib\\types\\index.js",
+      "line": 141,
+      "verdict": "supported",
+      "evidenceQuote": "/**\n * Provider-wire adapter for the harness message and stream vocabulary. Register implementations\n * with `ctx.llm.registerAdapter(providers, adapter)`. ...\n */\nexport class LlmAdapter {\n    providerInfo(provider) { return { id: provider, name: provider }; }\n    providerRetryPolicy(_provider) { return undefined; }\n    imageRequestPricing(_provider, _model) { return undefined; }\n    listModels(_provider) { return Promise.resolve([]); }\n    resolveModel(provider, model, _signal) { return Promise.resolve({ provider, id: model, name: model }); }\n    async prepareCall(provider, model, signal) { ... }",
+      "notes": "Metadata methods have defaults; the ONE abstract member is stream(). It is erased in compiled JS and is quoted from the generated catalogue host/dsh-llm/lib/typert.host.js:337: 'abstract stream(options: GenerateOptions): AsyncIterable<StreamChunk>;'. Class spans lines 141-208."
+    },
+    "registerConfigurableProviders": {
+      "package": "@deepseek-ai/dsh-llm",
+      "file": "D:\\Project\\_dsh-asar\\host\\dsh-llm\\lib\\index.js",
+      "line": 1910,
+      "verdict": "supported",
+      "evidenceQuote": "registerConfigurableProviders(entries) {",
+      "notes": "Signature registerConfigurableProviders(entries: readonly LlmConfigurableProvider[]): DirectoryRegistrationHandle. Live inspect: 'Declare provider routes an adapter plugin can activate through configuration. Registration is all-or-nothing ... Returns a handle that withdraws all of them, and can atomically replace them.'"
+    },
+    "registerModelDiscovery": {
+      "package": "@deepseek-ai/dsh-llm",
+      "file": "D:\\Project\\_dsh-asar\\host\\dsh-llm\\lib\\index.js",
+      "line": 1974,
+      "verdict": "supported",
+      "evidenceQuote": "registerModelDiscovery(settingsNs, discover) {",
+      "notes": "registerModelDiscovery(settingsNs: string, discover: (request: LlmModelDiscoveryRequest, signal?: AbortSignal) => Promise<readonly LlmDiscoveredModel[]>): () => void. Live inspect: 'Offer to interrogate provider endpoints on behalf of the settings namespace this plugin owns.' Companion: discoverModels(settingsNs, request, signal?) and @Remote remoteDiscoverModels."
+    }
+  },
+  "reasoningEffort": {
+    "ReasoningEffortId": {
+      "package": "@deepseek-ai/dsh-llm",
+      "file": "D:\\Project\\_dsh-asar\\host\\dsh-llm\\lib\\typert.host.js",
+      "line": 453,
+      "verdict": "supported",
+      "evidenceQuote": "export type ReasoningEffortId = Branded<'ReasoningEffortId'>;",
+      "notes": "Branded STRING, not a global enum. Runtime brand constructor: host/dsh-llm/lib/types/brand.js:50 'export function ReasoningEffortId(id)'. Identical declaration reported by live Host inspect of both 'llm' and 'subagents'."
+    },
+    "perModelEfforts": {
+      "package": "@deepseek-ai/dsh-llm",
+      "file": "D:\\Project\\_dsh-asar\\host\\dsh-llm\\lib\\typert.host.js",
+      "line": 381,
+      "verdict": "supported",
+      "evidenceQuote": "export interface LlmModelReasoningInfo {\n    efforts: readonly LlmReasoningEffortInfo[];\n    defaultEffort?: ReasoningEffortId;\n}",
+      "notes": "Reached via LlmResolvedModelInfo.reasoning. Efforts are per-model metadata returned by the owning adapter (listModels/resolveModel), so the supported set is model-scoped, not process-global."
+    },
+    "explicitEffortRejection": {
+      "package": "@deepseek-ai/dsh-llm",
+      "file": "D:\\Project\\_dsh-asar\\host\\dsh-llm\\lib\\index.js",
+      "line": 2177,
+      "verdict": "supported",
+      "evidenceQuote": "if (reasoning === void 0) {\n    if (requested !== void 0) throw new LlmError(`provider \"${config.provider}\" model \"${config.model}\" does not support reasoning effort \"${requested}\"`, \"UNSUPPORTED_REASONING_EFFORT\");\n} else {\n    const effective = requested ?? reasoning.defaultEffort;\n    if (effective !== void 0) {\n        if (!reasoning.efforts.some((effort) => effort.id === effective)) throw new LlmError(`provider \"${config.provider}\" model \"${config.model}\" does not support reasoning effort \"${effective}\"`, \"UNSUPPORTED_REASONING_EFFORT\");\n        if (requested !== effective) resolvedConfig = { ...defaulted, reasoningEffort: effective };\n    }\n}",
+      "notes": "resolveCallWithInfo is invoked by resolveCallFor (line 2164) BEFORE any dispatch, so rejection precedes provider I/O. NO clamping and NO aliasing: the only substitution is 'requested ?? reasoning.defaultEffort', which materialises a default solely when the caller omitted the field. Service doc line 2152-2154 (and live inspect of llm.resolveCallConfig): 'Unsupported explicit efforts reject before provider I/O; no clamping or aliasing is performed.'"
+    }
+  },
+  "permissionPresets": {
+    "publishNewPreset": {
+      "package": "@deepseek-ai/dsh-permission-presets",
+      "file": "D:\\Project\\_dsh-asar\\host2\\dsh-tool-cordis\\lib\\types\\api-catalog.js",
+      "line": 1513,
+      "verdict": "unsupported",
+      "evidenceQuote": "signature: 'registerAuto(admit: () => void): () => Promise<void>',\ndescription: \"Publish the fixed current-session Auto preset for the calling integration's effect lifetime.\"",
+      "notes": "The ONLY publication method on ctx.permissionPresets. Full method set is catalog() / registerAuto(admit) / current(session) / resolve(name) / optionOf(name) / set(session, name) (api-catalog.js:1507-1542) — no register(preset), no contributor registry."
+    },
+    "readmeStatement": {
+      "package": "@deepseek-ai/dsh-permission-presets",
+      "file": "D:\\Project\\_dsh-asar\\host\\dsh-permission-presets\\README.md",
+      "line": 60,
+      "verdict": "unsupported",
+      "evidenceQuote": "Callers cannot publish another preset through a generic contribution API, and they can switch away from `custom` but cannot select or persist a named custom preset through this service.",
+      "notes": "Also README.md:136 — '**The configured preset table is fixed for the plugin lifetime** — only the fixed Auto contribution can change the live process catalog without reloading this service.' Auto's identity/knobs are fixed inside the service (README.md:60) and its name is reserved (README.md:52). No-core-change alternative: the plugin's own config.presets table."
+    }
+  },
+  "mcp": {
+    "serverConfiguration": {
+      "package": "@deepseek-ai/dsh-mcp-client",
+      "file": "D:\\Project\\_dsh-asar\\host\\dsh-mcp-client\\README.md",
+      "line": 57,
+      "verdict": "conditional",
+      "evidenceQuote": "| `transport` | required | `stdio` or `streamable-http` |\n| `serverName` | required | Namespace for the server's tool names; `[A-Za-z0-9_-]{1,32}`, unique inside one registration scope |",
+      "notes": "One server per plugin CONFIG ENTRY ('Add one entry per server; nothing else is required.' README.md:32). CONFIG-TIME only. Tool names are mcp__<serverName>__<rawName> (README.md:75)."
+    },
+    "runtimeAddRemove": {
+      "package": "@deepseek-ai/dsh-mcp-client",
+      "file": "D:\\Project\\_dsh-asar\\host\\dsh-mcp-client\\README.md",
+      "line": 93,
+      "verdict": "unsupported",
+      "evidenceQuote": "After ten consecutive failed attempts the server's tools are removed and reconnection stops until you reload the configuration or restart the harness ... Editing the configuration entry reloads the server connection in place, and unchanged names stay unchanged.",
+      "notes": "No ctx.mcp add/remove service exists in the live Host service catalogue (the same catalogue that lists subagents, llm, sessionProjections, permissionPresets, tools, web...). The package source map (README.md:117-122) lists only apply/connection/server-context/tools/transport plus the exported createMcpToolDefinition(ctx, options) adapter. A plugin CAN add/remove servers by changing its own composition config and CAN reuse createMcpToolDefinition for its own transport (README.md:124) — only a RUNTIME API is absent."
+    }
+  },
+  "sessionProjections": {
+    "register": {
+      "package": "@deepseek-ai/dsh-session-projection",
+      "file": "D:\\Project\\_dsh-asar\\host2\\dsh-session-projection\\lib\\index.js",
+      "line": 68,
+      "verdict": "supported",
+      "evidenceQuote": "register(definition) {\n\tconst wire = definition.wire;\n\t...\n\tif (!Number.isSafeInteger(definition.stateVersion) || definition.stateVersion < 0) throw new Error(`session projection ${JSON.stringify(definition.key)} stateVersion must be a non-negative integer, got ${String(definition.stateVersion)}`);\n\tconst dispose = this.ctx.effect(function* () {\n\t\tconst key = erased.key;\n\t\tconst existing = this.registrations.get(key);\n\t\tif (existing === void 0) this.registrations.set(key, { def: erased, cells: new WeakMap(), refs: 1 });\n\t\telse {\n\t\t\tif (existing.def.stateVersion !== erased.stateVersion) throw new Error(`session projection key ${JSON.stringify(key)} is already registered at stateVersion ${String(existing.def.stateVersion)}; refusing to share it with stateVersion ${String(erased.stateVersion)}`);\n\t\t\texisting.refs += 1;\n\t\t}\n\t\t...\n\t}.bind(this), \"sessionProjections.register()\");\n\treturn () => void dispose();\n}",
+      "notes": "Two overloads (live inspect): client-visible with required wire { viewSchema, view }, or HOST-ONLY whose 'state is omitted from client snapshots and always checkpointed'. Registrants sharing a key share one unit and are refcounted; registration is an effect (disposer rides the fiber). ProjectionDefinition = { key, stateSchema, init(header, inheritedEventCount), apply(state, event), wire?, stateVersion }."
+    },
+    "stateOf": {
+      "package": "@deepseek-ai/dsh-session-projection",
+      "file": "D:\\Project\\_dsh-asar\\host2\\dsh-session-projection\\lib\\index.js",
+      "line": 127,
+      "verdict": "supported",
+      "evidenceQuote": "stateOf(session, key) {\n\tconst registration = this.registrations.get(key);\n\tif (registration === void 0) return void 0;\n\tthis.materializeCells(session);\n\treturn this.cellFor(registration, session).state;\n}",
+      "notes": "Returns undefined when the key is not registered; the returned value is live and must not be mutated."
+    },
+    "snapshot": {
+      "package": "@deepseek-ai/dsh-session-projection",
+      "file": "D:\\Project\\_dsh-asar\\host2\\dsh-session-projection\\lib\\index.js",
+      "line": 142,
+      "verdict": "supported",
+      "evidenceQuote": "snapshot(session, keys) {\n\tconst values = {};\n\tconst selected = keys === void 0 ? void 0 : new Set(keys);\n\tthis.materializeCells(session);\n\tfor (const registration of this.registrations.values()) {\n\t\tif (registration.def.wire === void 0) continue;\n\t\tif (selected !== void 0 && !selected.has(registration.def.key)) continue;\n\t\tconst cell = this.cellFor(registration, session);\n\t\tvalues[registration.def.key] = this.viewCell(registration, cell);\n\t}\n\treturn { asOfSeq: cursorBefore(session.seq), values };",
+      "notes": "Synchronous, one consistent cut; only client-visible units (wire defined) appear. Companion reads: cachedSnapshot, checkpoint, restoreFloor, viewCheckpoint, restore, hydrate, onChanged."
+    },
+    "customSessionMetadata": {
+      "verdict": "supported",
+      "evidenceQuote": "live Host inspect of sessionProjections returns: 'export interface SessionProjectionMap { }' and 'export interface SessionProjectionStateMap { }'",
+      "notes": "Both maps are EMPTY, extensible interfaces — the augmentation point for a plugin's own key — and runtime register() accepts any key. So a plugin CAN attach durable custom metadata to a session via its own projection unit (plus card UI through sidebar.session.row.leading / sidebar.session.row.hover / conversation.chat.turnTail / tool.call.toolview), and per-tool-call metadata has the host field 'tool/result'.meta?: JsonValue in SessionEventMap."
+    },
+    "customSessionEventType": {
+      "package": "@deepseek-ai/dsh-session",
+      "file": "D:\\Project\\_dsh-asar\\host\\dsh-session\\lib\\types\\known-event-types.js",
+      "line": 21,
+      "verdict": "unsupported",
+      "evidenceQuote": "export const KNOWN_SESSION_EVENT_TYPES = new Set([\n    'agent-preset/selected',\n    'agent/inbox/spliced',\n    ... 'workspace/changes',\n]);",
+      "notes": "GENERATED closed vocabulary (file header: 'GENERATED by scripts/gen-persistence-catalog.ts — do not edit by hand'). 40 members. Doc lines 7-19: 'The persistence read path refuses to interpret a log containing a type outside this set unless the event carries the envelope's ignorable marker ... event-name registration was rejected because it does not classify omission safety and would make reads composition-dependent.'"
+    },
+    "customEventPersistenceRefusal": {
+      "package": "@deepseek-ai/dsh-session-persistence",
+      "file": "/dsh/node_modules/@deepseek-ai/dsh-session-persistence/lib/index.js",
+      "line": 184,
+      "verdict": "unsupported",
+      "evidenceQuote": "if (!KNOWN_SESSION_EVENT_TYPES.has(event.type) && event.ignorable !== true) throw unsupported(`session \"${meta.id}\" contains event type \"${event.type}\" (seq ${event.seq}) unknown to this harness and not marked ignorable; refusing to interpret the log — it was likely written by a newer harness`, location);",
+      "notes": "Read directly from the asar (package not in the extraction). So: Session.append does NOT check the set (host/dsh-session/lib/index.js:1441-1461 validates only JSON-serializability + surface payloads via host/dsh-session/lib/types/surface.js:124), but an unmarked unknown type makes the session unreadable by the harness that wrote it. With ignorable: true it is retained OPAQUELY (host/dsh-session-log-deepseek/lib/index.js:60-69) and never enters the surface (host/dsh-session/lib/types/surface.js:211)."
+    }
+  },
+  "minimumCoreModifications": [
+    {
+      "requirement": "Publish a NEW named permission preset users can select",
+      "possibleViaPluginApi": false,
+      "package": "@deepseek-ai/dsh-permission-presets",
+      "file": "src/index.ts",
+      "symbol": "PermissionPresetService — beside registerAuto(), plus the preset-table/catalog composition and the reserved-name guards (custom/auto)",
+      "smallestChange": "Add a contributor registry (e.g. registerPreset(spec: PresetSpec & { name: string; label?: string }): () => Promise<void>) and fold its entries into the same composition that builds catalog()/resolve()/optionOf(). Client code already renders whatever catalog() returns.",
+      "noCoreChangeAlternative": "Ship the presets in this plugin's own config.presets table — the supported path; do not modify core if that suffices."
+    },
+    {
+      "requirement": "Register a persisted, first-class custom session-event type (usable without ignorable: true, able to carry model-visible meaning)",
+      "possibleViaPluginApi": false,
+      "package": "@deepseek-ai/dsh-session",
+      "file": "src/types.ts (SessionEventMap) + generated lib/types/known-event-types.js",
+      "symbol": "SessionEventMap; scripts/gen-persistence-catalog.ts (pnpm run gen-persistence-catalog, verified by verify-persistence-catalog)",
+      "smallestChange": "Add the member to SessionEventMap and regenerate known-event-types.js. dsh-session-persistence needs no change: it consults the generated set.",
+      "noCoreChangeAlternative": "Write the event with ignorable: true (durable, retained opaquely, excluded from the surface) and carry model-visible meaning in your own sessionProjections unit."
+    },
+    {
+      "requirement": "Add an extra column/field to a Team member row (TeamMemberView / the list_agents roster row)",
+      "possibleViaPluginApi": false,
+      "package": "@deepseek-ai/dsh-experimental-agent-team + @deepseek-ai/dsh-experimental-tool-agent-team",
+      "file": "src/types/roster.ts and src/index.ts (teamMemberSnapshotSchema, .strict()) in the first; lib/index.js MEMBER_VIEW_SCHEMA (additionalProperties:false) in the second",
+      "symbol": "TeamMemberView; teamMemberSnapshotSchema; MEMBER_VIEW_SCHEMA",
+      "smallestChange": "Extend the interface AND both closed runtime schemas — each independently rejects extra fields. Only needed if the upgrade genuinely requires extra member columns.",
+      "noCoreChangeAlternative": "None found inside the plugin API."
+    }
+  ],
+  "achievableViaPluginApiNoCoreChange": [
+    "All settings surfaces: settings.section, settings.plugins.tab, settings.general.item, settings.onboarding, settings.models.footer/provider-card/sign-in, plugins.item (note: settings.plugins.item DOES NOT EXIST in this build).",
+    "Composer/model seat: conversation.input.model is an ordinary single seat — register at a LOWER priority than the shipped occupant to win, at a higher one to be shadowed; conversation.input.left/right/overlay, conversation.input.dock, conversation.composer.dock, and the conversation.composer chain are all open.",
+    "Real LLM routing: ctx.llm.registerAdapter / registerConfigurableProviders / registerModelDiscovery, with per-model reasoning efforts and pre-I/O rejection of unsupported explicit efforts.",
+    "Per-child model/persona for IN-PROCESS delegation: advertise agentOptions: true and honour the merged options inside start() (as the shipped spawn/fork providers do).",
+    "Cancellation and resumption of delegated/continuable children: request.signal + dispose() + startContinuable + prepareContinuable + sendMessage (interrupt for a running child).",
+    "Durable custom session metadata + custom card UI: own sessionProjections key (SessionProjectionMap/SessionProjectionStateMap augmentation) plus card slots (sidebar.session.row.leading, sidebar.session.row.hover, conversation.chat.turnTail, conversation.chat.assistant-actions, tool.call.toolview).",
+    "MCP servers: add/remove through the plugin's own composition config (dsh-mcp-client entries) and reuse the exported createMcpToolDefinition adapter; only a runtime add/remove API is absent."
+  ],
+  "unconfirmed": [
+    "Live client Slot topology: all Client inspect queries (Slots.listSubTree, with and without root) timed out with 'Open or reconnect the Harness page'. Client slot kinds rest on byte-identical rc.2 client bundles plus the build-generated slot catalogue, not on a live probe.",
+    "No .d.ts ships in the asar, so SlotMap / owner-prop TYPE augmentation for settings.* could not be read from a declaration file; props come from owners' renderSlot call sites and the catalogue's ownerProps.",
+    "LlmAdapter's abstract stream() is erased in compiled JS; quoted from the generated catalogue (host/dsh-llm/lib/typert.host.js:337), not from executable code.",
+    "Exact line numbers for sidebar.session.row.leading and conversation.chat.turnTail were not resolved: dsh-client-ui-workspace was never extracted and dsh-client-ui-chat/lib/client.js was the single extraction gap; both entries are quoted from the generated slot catalogue inside the asar.",
+    "Whether the upgrade actually NEEDS the three minimum-core-modification items was not established — the table records only what is impossible, not what is required."
+  ]
+}

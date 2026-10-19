@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-14",
+  "seed": {
+    "id": "qoder-intl",
+    "displayName": "Qoder International (qodercli)",
+    "vendor": "alibaba",
+    "kind": "cli",
+    "entryPath": "C:\\Users\\Administrator\\.qodersec\\bin\\qodercli.exe",
+    "shimPath": null,
+    "shimWrappingRequired": "none",
+    "entryResolution": "Native executable measured 2026-10-14",
+    "versionProbe": [
+      "--version"
+    ],
+    "seedVersion": "1.0.45",
+    "confidence": "measured",
+    "inheritedFrom": null,
+    "connection": "agent-cli",
+    "transports": [
+      {
+        "kind": "headless",
+        "tier": 2,
+        "supported": true,
+        "note": "--print present in help; logged-in task not verified"
+      },
+      {
+        "kind": "pty",
+        "tier": 2,
+        "supported": true,
+        "note": null
+      },
+      {
+        "kind": "acp",
+        "tier": 1,
+        "supported": false,
+        "note": "No acp command in measured help"
+      }
+    ],
+    "modelSelect": "argv",
+    "modelFlag": "--model <model>",
+    "modelListArgs": [
+      "--list-models"
+    ],
+    "modelListCommandRaw": "qodercli --list-models",
+    "modelListCount": null,
+    "providerConfigFiles": [],
+    "multiAccount": "unknown",
+    "multiAccountSwitch": "--config-dir <dir>",
+    "isolationTested": false,
+    "permissionModes": [],
+    "reasoningEfforts": [],
+    "sessionResume": "unknown",
+    "sessionResumeNote": null,
+    "mcpServer": true,
+    "authNote": "Fresh and default config root status logged_in:false. International dual logged-in accounts not verified.",
+    "upstreamLimits": [
+      "Regional credentials are not interchangeable",
+      "Authenticated international account concurrency not verified"
+    ]
+  },
+  "evidence": "outputs/Qoder国际版配置隔离独立探针.json"
+}

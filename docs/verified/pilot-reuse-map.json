@@ -1,0 +1,372 @@
+{
+  "$schema-note": "capability -> {files, entryPoints, stateFiles, reuse, risk}. reuse ∈ keep|extend|replace. risk ∈ low|medium|high. Every path is repo-relative unless absolute. Line numbers are 1-based and were read out of the working tree on the audit date; sources were NOT modified.",
+  "plugin": {
+    "package": "@dsh-external/dsh-harness-pilot",
+    "version": "0.1.1",
+    "sourceRoot": "D:\\Project\\dsh-harness-pilot",
+    "runtimeEntry": "lib/index.js (tsc output of src/index.ts)",
+    "profileLink": "C:\\Users\\Administrator\\.dsh\\profiles\\desktop\\node_modules\\@dsh-external\\dsh-harness-pilot -> D:\\Project\\dsh-harness-pilot (junction, verified)",
+    "runtimeLiveness": "all 10 harness_* tools present in the running 0.2.0-rc.2 host Tool registry (verified live)",
+    "hostPeerMismatch": "plugin node_modules resolve @deepseek-ai/dsh-* 0.2.0-rc.1 (dsh-tools/dsh-subagent/dsh-llm/dsh-session/dsh-agent), cordis 4.0.4, schemastery 3.18.4, while the host process is 0.2.0-rc.2"
+  },
+  "capabilities": {
+    "dispatch-ladder": {
+      "files": ["src/types.ts", "src/sessions.ts", "src/index.ts", "src/tools.ts", "src/config.ts", "src/task-tools.ts"],
+      "entryPoints": [
+        "src/types.ts:12 DEFAULT_TRANSPORT_ORDER = ['acp','headless','pty','cdp','window']",
+        "src/sessions.ts:54 ALL_TRANSPORTS",
+        "src/sessions.ts:222 preflight(kind,target,{killFirst})",
+        "src/sessions.ts:265 dispatch(spec,{transport})",
+        "src/sessions.ts:298 run(kind,spec)",
+        "src/sessions.ts:345 open(target,{cwd,launch,killFirst,killForce,transport})",
+        "src/index.ts:291 GET /harness-pilot/api/probe?target=",
+        "src/tools.ts:750 harness_list probe=true",
+        "src/tools.ts:839 harness_dispatch transport enum",
+        "src/tools.ts:955 harness_open transport enum (no headless)"
+      ],
+      "stateFiles": ["none (facts.ladder is per-call only: src/sessions.ts:295)"],
+      "reuse": "keep",
+      "risk": "high",
+      "riskDetail": "Ladder list is duplicated in 4 places (src/types.ts:12, src/sessions.ts:54, src/index.ts:79, src/tools.ts:751); changing one silently desynchronises the others. Downgrade-visibility depends on InteractiveSession.warning (src/sessions.ts:79-83) and facts.ladder — both must survive. open() walks rungs at attach time (src/sessions.ts:367-391) while dispatch() commits to exactly one rung before running (src/sessions.ts:276-295): verified no mid-run re-dispatch.",
+      "verifiedClaim": "downgrade only at pre-flight, never a silent mid-run re-dispatch = CONFIRMED (src/sessions.ts:276-283 break, :294 single run; no transport module imports sessions.ts)"
+    },
+    "task-ledger": {
+      "files": ["src/tasks.ts", "src/task-tools.ts", "src/index.ts", "src/provider.ts", "src/settings.ts"],
+      "entryPoints": [
+        "src/tasks.ts:147 class TaskManager",
+        "src/tasks.ts:201 start(input) [kind=task]",
+        "src/tasks.ts:239 track(input) [kind=task|subagent]",
+        "src/tasks.ts:431 status(id)",
+        "src/tasks.ts:452 list()",
+        "src/tasks.ts:473 progress(id,offset,limit)",
+        "src/tasks.ts:493 result(id)",
+        "src/tasks.ts:507 cancel(id)",
+        "src/tasks.ts:520 wait(id,timeoutMs)",
+        "src/tasks.ts:322 armStallWatch(task,timeoutMs)",
+        "src/task-tools.ts:77 harness_task_start",
+        "src/task-tools.ts:130 harness_task_status",
+        "src/task-tools.ts:172 harness_task_list",
+        "src/task-tools.ts:188 harness_task_cancel",
+        "src/provider.ts:79 track({kind:'subagent',stallTimeoutMs:120000})",
+        "src/index.ts:735 new TaskManager({directory: join(pluginHome(),'tasks'), ...})",
+        "src/index.ts:532 GET /tasks",
+        "src/index.ts:546 GET /task?id=&result=1&log_offset=",
+        "src/index.ts:576 POST /task/start",
+        "src/index.ts:630 POST /task/cancel"
+      ],
+      "stateFiles": [
+        "~/.dsh/plugins/harness-pilot/tasks/<uuid>.json (TaskView, pretty JSON)",
+        "~/.dsh/plugins/harness-pilot/tasks/<uuid>.log (appended progress)",
+        "~/.dsh/plugins/harness-pilot/tasks/<uuid>.result.json (TaskResult, written on EVERY terminal settle incl. failure: src/tasks.ts:390-392)",
+        "current on-disk: 84 tasks x 3 files (168 *.json of which 84 *.result.json, 84 *.log); largest .log = 5,574,890 bytes"
+      ],
+      "reuse": "extend",
+      "risk": "high",
+      "riskDetail": "Task id is the join key across tools, HTTP, client panel and filenames. Field renames or file renames orphan all 84 existing records (status() throws 'unknown task_id' at src/tasks.ts:438). The kind backfill (src/tasks.ts:440-441) is required to read pre-kind history. stalled is NOT terminal (src/tasks.ts:15) and progress() reclaims it to running (:283-286). armStallWatch is armed only from track(), so kind=task has a hard deadline but no stall state.",
+      "gaps": [
+        "no retention/pruning — tasks/ grows without bound (5.5 MB single log already)",
+        "callback 'uncertain' is only reachable via crash recovery of a 'sending' record; nothing in the plugin ever sets err.deliveryUncertain"
+      ]
+    },
+    "completion-receipts": {
+      "files": ["src/wake.ts", "src/tasks.ts", "src/index.ts"],
+      "entryPoints": [
+        "src/index.ts:739 onComplete -> buildReceipt -> waker.wake",
+        "src/wake.ts:61 buildReceipt(view,callback,result,settings)",
+        "src/wake.ts:108 createSessionWaker({resolve})",
+        "src/wake.ts:117 sessionController.resolveAgent -> agent.followup",
+        "src/wake.ts:130 fallback agents.get / agents.resume -> followup",
+        "src/wake.ts:151 flushQuietly(sessions, agent)",
+        "src/wake.ts:98 explicitError() sets explicitRejection",
+        "src/tasks.ts:399 deliver(task)",
+        "src/tasks.ts:414-426 callback.status state machine",
+        "src/tasks.ts:443-445 sending -> uncertain on restart",
+        "src/index.ts:722 lazy service resolution for sessionController/agents/sessions"
+      ],
+      "stateFiles": ["~/.dsh/plugins/harness-pilot/tasks/<uuid>.json -> callback.{status,receipt,error,deliveredAt}"],
+      "reuse": "keep",
+      "risk": "high",
+      "riskDetail": "callback.status vocabulary (pending|sending|delivered|failed|skipped|uncertain) is a cross-tool contract with the Codex-side port and is rendered verbatim in the client and harness_task_status. delivered means 'follow-up turn queued', not 'session processed it' (flush errors are swallowed: src/wake.ts:151-156). Never re-deliver after a crash — the sending->uncertain rule is the only double-wake guard.",
+      "gaps": ["err.deliveryUncertain is read (src/tasks.ts:422) but never set anywhere in this plugin"]
+    },
+    "session-resume-continuity": {
+      "files": ["src/provider.ts", "src/transports/acp.ts", "src/transports/cdp.ts", "src/sessions.ts"],
+      "entryPoints": [
+        "src/provider.ts:49-59 HarnessProvider {name, capabilities, inheritsParentContext, start} — ONLY these four members",
+        "src/provider.ts:50 capabilities = NO_START_CAPABILITIES",
+        "src/transports/acp.ts:336 sessionId = session.sessionId (used only in facts :197 and cancel :243-249)",
+        "src/transports/cdp.ts:1613-1623 readback session id from the page, per dispatch",
+        "src/sessions.ts:166 in-memory sessions Map; ids minted at :523-526"
+      ],
+      "stateFiles": ["none — native session ids are never persisted"],
+      "reuse": "replace",
+      "risk": "low",
+      "riskDetail": "Nothing to preserve because nothing exists: repo-wide grep in src/ for startContinuable|prepareContinuable|sendMessage|agentRouteDefaults returns 0 matches. Adding a persistence store + optional provider members disturbs no existing behaviour. This is the cleanest insertion point of the whole upgrade.",
+      "verifiedClaim": "startContinuable / prepareContinuable / sendMessage are NOT wired = REFUTED as a description of current behaviour (they do not exist)"
+    },
+    "subagent-provider-registration": {
+      "files": ["src/provider.ts", "src/index.ts", "cordis.patch.yml"],
+      "entryPoints": [
+        "src/index.ts:756 child fiber with inject:['subagents'] (must stay AFTER TaskManager)",
+        "src/index.ts:763 registerProviders(subagents, registry, tasks, config.resolvedTargets, config.defaultTarget)",
+        "src/index.ts:705 subagentsFacade (lazy ctx.subagents)",
+        "src/provider.ts:149 providerNameFor(target) -> 'harness-<name>'",
+        "src/provider.ts:167 registerProviders(...)",
+        "src/provider.ts:185 extra default alias 'harness-pilot' for config.defaultTarget",
+        "src/provider.ts:175-182 idempotency via registry.list()",
+        "src/provider.ts:61 start(request) -> SubagentRun",
+        "src/provider.ts:133 subprocessRunHandle({id: tracked.id as unknown as SubagentRun['id']})",
+        "cordis.patch.yml:17-26 host tool-subagent usage with provider: harness-opencode"
+      ],
+      "stateFiles": ["ledger row per run (kind=subagent) — see task-ledger"],
+      "reuse": "extend",
+      "risk": "high",
+      "riskDetail": "Provider NAMES are the addressing contract for the host tool-subagent, harness_agent, and Agent Teams freshProvider/forkProvider. The plan's proposed rename to hx-<harness>-<account> invalidates existing users' cordis.patch.yml entries and team configs. Keep harness-<name> and harness-pilot; add aliases rather than renaming.",
+      "gaps": ["no prepareContinuable/agentRouteDefaults; capabilities=NO_START_CAPABILITIES blocks per-child model through the provider, which is why harness_agent(model=) bypasses it (src/tools.ts:891-908)"]
+    },
+    "settings-page-and-http-api": {
+      "files": ["client/client.js", "client.js", "lib/client.js", "src/index.ts", "src/settings.ts"],
+      "entryPoints": [
+        "client/client.js:12 window.__ModuleLoader__.load({id,factory}) — only dep is host 'react'",
+        "client/client.js:673-689 inject:['slots'] + apply(ctx)",
+        "client/client.js:677 settings.section {id:'harness-pilot',order:30}",
+        "client/client.js:684 settings.plugins.tab {id:'harness-pilot',order:40}",
+        "src/index.ts:76 API_PATH = '/harness-pilot/api'",
+        "src/index.ts:125 registerApiRoute (self-heal retry)",
+        "src/index.ts:99 clearStaleRoutes (pokes private exact/prefixes/upgrades Maps)",
+        "src/index.ts:226 createApiHandler(registry,config,extras)",
+        "src/index.ts:796 child fiber inject:['webServer']"
+      ],
+      "routes": [
+        "GET  /overview            ?models=1                        -> Overview + runtimeSettings + tasks[0..30]   src/index.ts:275",
+        "GET  /probe               ?target=                         -> {target,ladder[{transport,available,detail}]} src/index.ts:291",
+        "POST /models              {target?,refresh?}                -> {target,models,note,mechanism}              src/index.ts:310",
+        "POST /dispatch            {target,prompt,model?,transport?,timeout_ms?,cwd?} -> {target,transport,stopReason,text,diagnostic?,facts?} src/index.ts:329",
+        "POST /send (open)         {target,model?,cwd?,launch?}      -> {sessionId,transport,currentModel,detail,warning?,modelSwitch?,notes} src/index.ts:381",
+        "POST /send (write)        {sessionId,text?,submit?,wait_ms?} -> {sessionId,target,transport,action,text,source,diagnostic?} src/index.ts:394",
+        "GET  /settings            -                                 -> {settings,tasksDir,settingsFile}            src/index.ts:499",
+        "POST /settings/save       RuntimeSettings subset             -> {settings}                                  src/index.ts:513",
+        "GET  /tasks               -                                 -> {tasks}                                     src/index.ts:532",
+        "GET  /task                ?id=&result=0|1&log_offset=        -> TaskView & {text,offset,next_offset,has_more,progress_note} (+result) src/index.ts:546",
+        "POST /task/start          {target,prompt,model?,transport?,timeout_ms?,cwd?,notify?,session_id?,instruction?} -> {task} src/index.ts:576",
+        "POST /task/cancel         {task_id}                          -> {view,cancellation_requested}               src/index.ts:630",
+        "404 fallback                                                                                            src/index.ts:657"
+      ],
+      "guards": [
+        "token: x-harness-pilot-token when config.apiToken non-empty, constant-time (src/index.ts:247-257, tokensMatch :191)",
+        "body cap 64 KiB -> 413; invalid JSON/shape -> 400 (src/index.ts:78,154-188)",
+        "405 + allow header (src/index.ts:269-272)"
+      ],
+      "stateFiles": ["none (reads settings + task files)"],
+      "reuse": "extend",
+      "risk": "medium",
+      "riskDetail": "The client probes five fallback key names for an unavailable-reason (client/client.js:148) and hard-fails to an empty state if runtimeSettings is absent. The client sends NO token header (client/client.js:93), so any apiToken already breaks the page today.",
+      "clientArtifactParity": "client/client.js, <root>/client.js and lib/client.js are byte-identical (SHA-256 6D2101DD6EBB1B90A5242EBCA7CD539CE3A0CB374F05B741E9EAFC7146C9DCCC, 34111 bytes each) — produced by scripts/build.mjs:95-104"
+    },
+    "runtime-settings": {
+      "files": ["src/settings.ts", "src/index.ts", "client/client.js"],
+      "entryPoints": [
+        "src/settings.ts:12 RuntimeSettings {notifyOnComplete,deliverResult,maxResultChars,maxConcurrent,defaultTaskTimeoutMs,resumeInstruction}",
+        "src/settings.ts:27 DEFAULT_SETTINGS",
+        "src/settings.ts:37 pluginHome() — HARNESS_PILOT_HOME override, else ~/.dsh/plugins/harness-pilot",
+        "src/settings.ts:53 normalizeSettings (clamps: maxResultChars 500..200000, defaultTaskTimeoutMs 5000..86400000, resumeInstruction <=4000)",
+        "src/settings.ts:67 loadSettings",
+        "src/settings.ts:77 saveSettings (atomic tmp+rename)",
+        "src/index.ts:746 applySettings -> saveSettings + tasks.setMaxConcurrent",
+        "client/client.js:401-501 settings form -> POST /settings/save"
+      ],
+      "stateFiles": [
+        "~/.dsh/plugins/harness-pilot/runtime-settings.json",
+        "~/.dsh/plugins/harness-pilot/unlimited-live.json (ORPHAN: zero readers in the repo)",
+        "~/.dsh/plugins/harness-pilot/remedies/*.ps1 (kill_first remedy scripts, src/remedies.ts:124-127)"
+      ],
+      "currentOnDisk": {
+        "runtime-settings.json": {"notifyOnComplete": true, "deliverResult": true, "maxResultChars": 20000, "maxConcurrent": 0, "defaultTaskTimeoutMs": 600000, "resumeInstruction": ""},
+        "unlimited-live.json": {"pid": 42164, "appliedAt": "2026-10-13T07:31:35.068Z", "maxConcurrent": 0, "taskModule": "D:/Project/dsh-harness-pilot/lib/tasks.js", "preservesExistingTasks": true}
+      },
+      "defaultHarnessSelection": "NOT a runtime setting: Cordis Config defaultTarget (src/config.ts:83) resolved at src/config.ts:592-594 (explicit value else resolvedTargets[0].name); KNOWN_TARGETS[0] is 'opencode' (src/config.ts:223-225), so the effective default here is opencode",
+      "reuse": "extend",
+      "risk": "medium",
+      "riskDetail": "normalizeSettings falls back per field, so renamed JSON keys silently reset instead of erroring. Moving the data dir without honouring HARNESS_PILOT_HOME strands ledger + settings. notifyOnComplete is a DEAD SETTING: defined/defaulted/rendered but read nowhere in the delivery path (src/tasks.ts:400-401 keys off the per-task callback.notify only) — users who set it false are still woken.",
+      "defect": "notifyOnComplete unused (settings.ts:14,28,56 only)"
+    },
+    "transports": {
+      "files": ["src/transports/acp.ts", "src/transports/headless.ts", "src/transports/pty.ts", "src/transports/cdp.ts", "src/transports/window.ts", "src/launcher.ts", "src/helper.ts", "src/text.ts", "src/remedies.ts", "python/hp_helper.py"],
+      "entryPoints": [
+        "src/launcher.ts:64 resolveLauncher / :116 buildArgv / :138 probeCommand / :41 launchEnv (strips ELECTRON_RUN_AS_NODE)",
+        "src/transports/acp.ts:65 probeAcp / :129 dispatchAcp / :92 mapStopReason / :305 auto-allow permission handler",
+        "src/transports/headless.ts:44 dispatchHeadless / :32 headlessArgv / :14 killTree",
+        "src/transports/pty.ts:70 probePty / :92 dispatchPty / :224 PtySession",
+        "src/transports/cdp.ts:257 probeCdp / :1373 probeCdpTarget / :1426 openCdp / :1665 dispatchCdp / :1242 terminateForLaunch / :1604 readReplyFromService / :1138 SingleInstanceBlocked",
+        "src/transports/window.ts:164 openWindow / :250 readWindow / :327 sendToWindow / :446 dispatchWindow / :420 closeWindow",
+        "src/helper.ts:53 WindowHelper (python/hp_helper.py)",
+        "src/remedies.ts:118 buildRelaunchRemedy"
+      ],
+      "stateFiles": ["~/.dsh/plugins/harness-pilot/remedies/relaunch-<target>-<port>.ps1 (best-effort, src/remedies.ts:120-127)"],
+      "reuse": "keep",
+      "risk": "high",
+      "riskDetail": "Each transport encodes hard-won product-specific behaviour: CDP single-instance honesty + kill_first guards + page ownership scoring; window foreground gate (refuses to type into a stolen foreground); ClickOutcome normalisation (a page-internal click miss returns {ok:false} without throwing — the fix for a real mis-delivery). Headless maps nonzero-exit-with-stdout to completed (src/transports/headless.ts:130-132). ACP records a failed set_config_option only in facts.acpModelNote while stopReason stays completed (src/transports/acp.ts:342-353) — a silently ineffective model request.",
+      "perTransport": {
+        "acp": {"needs": "@agentclientprotocol/sdk", "preflight": "src/transports/acp.ts:65-89 (never spawns)", "failureModes": "process-tree kill on every exit :224-227; session/cancel then killTree :238-256; stop-reason table :92-115"},
+        "headless": {"needs": "resolvable command", "preflight": "src/sessions.ts:224-227 (probeCommand only)", "failureModes": "timeout/abort killTree :96-105; nonzero exit semantics :123-135"},
+        "pty": {"needs": "ctx.subprocess.spawnTerminal (src/index.ts:675-679) + optional @xterm/headless", "preflight": "src/transports/pty.ts:70-77", "failureModes": "empty screen -> error with 'may need the window channel' :204-208; raw-ANSI fallback :203"},
+        "cdp": {"needs": "ws module via createRequire (:19,45-46)", "preflight": "src/transports/cdp.ts:1373-1418 (killFirst-aware, comment :1387-1391 records the real dead-code bug)", "failureModes": "cross-target port collision :1453-1455; Electron single instance -> SingleInstanceBlocked :1496-1512; DOM/virtual-list lag -> service readback :1821-1838"},
+        "window": {"needs": "python/hp_helper.py + pyautogui/Pillow/pywin32/uiautomation (package.json:49)", "preflight": "src/sessions.ts:245-258 (helper.ensure + real window search)", "failureModes": "refuses empty match :171-177; refuses to type when not foreground :304-318; never fabricates text on empty read :574-596"}
+      }
+    },
+    "model-handling": {
+      "files": ["src/tools.ts", "src/models.ts", "src/sessions.ts", "src/config.ts", "src/index.ts", "src/transports/acp.ts"],
+      "entryPoints": [
+        "src/tools.ts:770 harness_models",
+        "src/models.ts:20 listHarnessModels (modelsCommand) / :76 parseModels / :107 listDshModels(ctx.llm)",
+        "src/sessions.ts:565 targetModels (modelsCacheMs cache) / :577 clearModelCache",
+        "src/sessions.ts:146 withModel (modelArgs {model} substitution + acpModel) / :606 canSelectModel",
+        "src/tools.ts:71 mechanismOf",
+        "src/tools.ts:575 currentModelOf / :590 switchModel (real CDP mouse) / :676 switchModelInPage (legacy)",
+        "src/transports/acp.ts:342 session/set_config_option {configId:'model'}",
+        "src/index.ts:310 POST /models / :322 refresh",
+        "src/index.ts:436-494 POST /send currentModel + modelSwitch{ok,detail}",
+        "client/client.js:625-636 separate sections: harness targets vs 'DSH 已配置供应商'"
+      ],
+      "stateFiles": ["in-memory only: SessionRegistry.modelCache (src/sessions.ts:168)"],
+      "reuse": "extend",
+      "risk": "medium",
+      "riskDetail": "Targets WITH modelsCommand: opencode(config.ts:232), mimo-cli(:270), qodercli(:307), qoderclicn(:317), grok-cli(:336), agy(:346), pi(:359). All 11 GUI targets have none, so harness_models lists nothing for them.",
+      "dshListDefect": {
+        "verdict": "REFUTED as stated (no code path presents ctx.llm models as an external CLI's own list)",
+        "evidenceRefuting": [
+          "separate types: DshProviderModels src/models.ts:96-100 vs TargetOverview.models src/sessions.ts:130",
+          "separate HTTP fields: Overview.dsh.providers src/sessions.ts:139 vs targets[].models :130",
+          "separate client sections: client/client.js:633-636 vs :625-628 (+ per-target model count :353-363)",
+          "explicit headers in harness_models: 'DSH profile providers (N) — what this DSH install itself can route to' src/tools.ts:785 vs '## <target>' :813",
+          "mechanismOf never consults ctx.llm (src/tools.ts:71-78)"
+        ],
+        "residualDefectsToFix": [
+          "tool description fuses both sources and tells callers to reuse 'the returned ids' with harness_dispatch(model=)/harness_agent(model=) — src/tools.ts:772-775",
+          "the DSH block prints even when an external target is requested (src/tools.ts:785-793 runs before the target branch) -> copy-the-wrong-id risk",
+          "harness_dispatch/harness_agent model descriptions say 'see harness_models for what each harness offers' (src/tools.ts:840, :878) while GUI targets are absent from that listing (src/tools.ts:810)",
+          "stray reference in harness_send model description: 'harness_models/qoder-cn' (src/tools.ts:1001)",
+          "four-state availability (configured|discoverable|auth-valid|usable, src/federation/types.ts:166) is not enforced anywhere; canSelectModel is only modelArgs.length>0||acpArgs.length>0 (src/sessions.ts:606)"
+        ]
+      }
+    },
+    "build-and-verify": {
+      "files": ["scripts/build.mjs", "package.json", "tsconfig.json", "cordis.patch.yml", "probe/"],
+      "entryPoints": [
+        "scripts/build.mjs:19 findInstall (DSH_INSTALL -> DSH_CHECKOUT/node_modules -> C:/dsh/node_modules)",
+        "scripts/build.mjs:34 findCheckout (DSH_CHECKOUT -> D:/Project/deepseek-harness-master/deepseek-harness-master -> C:/dsh -> ~/dsh-harness)",
+        "scripts/build.mjs:61-85 junction 7 host peers + node-pty + @agentclientprotocol/sdk + ws + @xterm/headless + @types/node",
+        "scripts/build.mjs:92 tsc -p tsconfig.json",
+        "scripts/build.mjs:95-104 copy client/client.js -> client.js + lib/client.js",
+        "package.json:7-12 exports '.'=./lib/index.js, './client'=./client.js",
+        "package.json:39-51 dsh.bundle.patch / dsh.client{platform:web,immediately:true} / dsh.plugin.runtime.python",
+        "cordis.patch.yml:5-16 bundle patch inserting the plugin into the profile"
+      ],
+      "stateFiles": ["lib/ (tsc output + lib/types/*.d.ts), client.js, lib/client.js"],
+      "reuse": "keep",
+      "risk": "medium",
+      "riskDetail": "Both default search paths are stale on this machine (build.mjs:23 C:/dsh, :37 deepseek-harness-master); the build currently works only because the junctions already exist. Re-running is idempotent (rmSync+symlink then tsc) and propagates tsc's exit code.",
+      "reusableProbes": [
+        "probe/verify-api-handler.mjs (235) — offline /harness-pilot/api contract: 401/400/413/405/404/200 + 5 endpoints",
+        "probe/verify-route-heal.mjs (93) — registerApiRoute/clearStaleRoutes self-heal",
+        "probe/verify-tasks-wake.mjs (251) — settings save + task lifecycle + receipt text + waker chain",
+        "probe/verify-subagent-run-ledger.mjs (137) — kind=subagent ledger, terminal persistence, stalled",
+        "probe/verify-send-click-guard.mjs (186) — P3 fail-closed: send() must not run after a failed click",
+        "probe/verify-open-single-instance.mjs (139) — remedy + SingleInstanceBlocked + 4 kill_first guards (non-destructive)",
+        "probe/verify-kill-first-reachable.mjs (110) — seam: preflight(cdp,{killFirst}) must be available",
+        "probe/verify-launch-env.mjs (62) — ELECTRON_RUN_AS_NODE must be stripped for GUI launches",
+        "probe/argv-check.mjs (49) — cmd.exe quoting: prompt must stay one argv",
+        "probe/acp-spawn-check.mjs (25) — acp.ts spawn form / .cmd verbatim",
+        "probe/client-register-check.mjs (56) — client artifact slot registration (header comment at :5 is stale)",
+        "probe/verify-api.mjs (142) — hits the RUNNING DSH api (requires build + reload first)",
+        "probe/verify-models.mjs (88), verify-models2.mjs (139) — real GUI model switching (needs apps running)",
+        "probe/verify-qoder-cn-target.mjs (34), verify-qoder-cn-send.mjs (66) — CDP attach/pageMatch + e2e send",
+        "probe/verify-opencode-desktop.mjs (99), verify-opencode-desktop-tools.mjs (72) — CDP dispatch/readback + tool surface",
+        "probe/acp-probe.mjs (318) — real opencode acp timing (imports lib/transports/acp.js)",
+        "probe/cdp-launch-check.mjs (193) — full CDP plumbing on real Chromium (isolated --user-data-dir)",
+        "probe/cdp-harness-probe.mjs (173) — read-only Electron probe + honest-failure demo",
+        "probe/window-dispatch.mjs (205), probe/helper-smoke.mjs (92) — window channel e2e / helper primitives",
+        "probe/console-roundtrip.mjs (129), console-shim-roundtrip.mjs (115), console-debug.mjs (53), console-visual.mjs (72) — console buffer read/type, COORD shim, screenshots",
+        "probe/ime-enter-test.mjs (120) — Enter-submits? IME mangling?",
+        "probe/e2e-kill-first.mjs (127) — DESTRUCTIVE kill+relaunch E2E, requires --yes",
+        "probe/type-foreground.mjs (19), probe/input-survey.mjs (28), probe/cleanup-hp-windows.mjs (14) — manual utilities",
+        "probe/audit/ (60+ files, 3 reports) — one-off model-picker reconnaissance; evidence only, not regression checks"
+      ]
+    },
+    "federation-scaffold": {
+      "files": ["src/federation/types.ts"],
+      "entryPoints": ["src/federation/types.ts:15 TransportCapability / :79 HarnessRecord / :148 AccountProfile / :186 ProviderInventory / :207 ExecutionRecord / :225 redactAccountLabel / :230 redactSecrets"],
+      "stateFiles": ["none"],
+      "reuse": "extend",
+      "risk": "low",
+      "riskDetail": "Verified dead code: repo-wide grep for 'federation' in *.ts matches only its own header comments (:2,:10). Nothing imports it; probe/verify-federation.mjs named at :10 does not exist. It is a pure-type module (implementations may import only these types + node:*) and can be extended freely."
+    }
+  },
+  "insertionPoints": [
+    {"id": "I1", "where": "src/index.ts:756-766", "what": "new child fiber with inject:['subagents'] for provider extras", "safety": "mirrors the existing deferred-service discipline documented at src/index.ts:698-704"},
+    {"id": "I2", "where": "src/index.ts:220-224 (ApiExtras) + :786 (pass) + before :657 (404 fallback)", "what": "new HTTP routes", "safety": "offline-testable via probe/verify-api-handler.mjs"},
+    {"id": "I3", "where": "src/index.ts:768-779", "what": "new tools", "safety": "register() helpers are idempotent (src/tools.ts:711-718, src/task-tools.ts:71-75)"},
+    {"id": "I4", "where": "src/provider.ts:49-59", "what": "prepareContinuable / agentRouteDefaults / extra capabilities", "safety": "nothing reads these members today; DO NOT rename existing provider names"},
+    {"id": "I5", "where": "src/tasks.ts:27 (TaskKind) + :179-198 (view)", "what": "new run kinds / fields", "safety": "follow the kind-backfill pattern (:440-441) with optional-with-default fields"},
+    {"id": "I6", "where": "client/client.js:673-689", "what": "new settings sections", "safety": "keep the never-throw / all-fields-optional rule (:88-113)"},
+    {"id": "I7", "where": "src/federation/types.ts", "what": "federation data model", "safety": "dead code today; pure types + node:*"},
+    {"id": "I8", "where": "src/config.ts:81-89 + :582-605", "what": "new Config fields", "safety": "Schemastery defaults keep old profile patches valid"},
+    {"id": "I9", "where": "src/settings.ts:12-25 + :53-64", "what": "new runtime settings", "safety": "normalizeSettings fills defaults for old files"},
+    {"id": "I10", "where": "probe/verify-*.mjs", "what": "new verifiers", "safety": "established shape: import ../lib/*.js, fake the host boundary, non-zero exit on failure"}
+  ],
+  "breakingChangeWarnings": [
+    "Renaming subagent providers (harness-<name> / harness-pilot) invalidates cordis.patch.yml provider: entries, Agent-Team freshProvider/forkProvider configs and harness_agent callers.",
+    "Changing ledger file names or TaskView field names orphans all 84 existing task records (status() throws at src/tasks.ts:438).",
+    "Dropping the kind backfill (src/tasks.ts:440-441) breaks pre-kind history rendering.",
+    "Moving the plugin data dir without honouring HARNESS_PILOT_HOME (src/settings.ts:38) strands tasks + runtime-settings (maxConcurrent:0 would revert to 4).",
+    "Renaming runtime-settings keys silently resets them (per-field fallback in normalizeSettings).",
+    "Non-empty config.apiToken already breaks the client page because the client sends no token header (client/client.js:93, guard src/index.ts:249-257).",
+    "Removing the deferred-fiber registration (src/index.ts:756-766, :796-812) reintroduces the observed bundle-startup route/provider loss.",
+    "Treating 'stalled' as terminal breaks stalled->running recovery (src/tasks.ts:283-286, probe/verify-subagent-run-ledger.mjs:93-97).",
+    "Rewriting open() to jump straight to CDP loses the killFirst preflight passthrough (src/sessions.ts:369-371) that makes kill_first reachable at all.",
+    "harness_open transport=acp is accepted by the enum (src/tools.ts:955, src/sessions.ts:357-364) but create() has no acp branch (src/sessions.ts:422-521) -> falls through the ladder. Pre-existing; do not silently 'fix' without a decision."
+  ],
+  "fragileCoupling": {
+    "loadBearingCasts": [
+      "src/index.ts:667-671 ctx as unknown as {get,effect,plugin}",
+      "src/index.ts:705-717 subagentsFacade lazy ctx.subagents",
+      "src/index.ts:99-115 clearStaleRoutes pokes private exact/prefixes/upgrades Maps (WebServerLike doc :66-73)",
+      "src/index.ts:805 ?? (ctx2 as unknown as {webServer?}).webServer",
+      "src/provider.ts:136 tracked.id as unknown as SubagentRun['id']",
+      "src/tools.ts:708 + src/task-tools.ts:69 ctx: any (host typing bypassed)",
+      "src/transports/acp.ts:319 Readable.toWeb(...) as unknown as ReadableStream<Uint8Array>"
+    ],
+    "duplicatedHostShapes": [
+      "src/tools.ts:54-58 agentCwd, src/provider.ts:43-47 parentCwdOf, src/task-tools.ts:40-50 agentContext — three independent re-derivations of session.header.cwd / agent.id; silent fallbacks to process.cwd() / '' would turn a receipt into callback.status=skipped"
+    ],
+    "hostVersionAssumptions": [
+      "src/index.ts:47-51 only tools/llm/subprocess are guaranteed; everything else deferred or lazily resolved",
+      "package.json:22-28 peer ranges are wider than installed: plugin node_modules resolve 0.2.0-rc.1 while the host is 0.2.0-rc.2; nothing detects the mismatch",
+      "src/sessions.ts:615 hardcoded version '0.1.0' while package.json:3 says 0.1.1 (displayed by the client at client/client.js:206-213,614)"
+    ],
+    "hardcodedAbsolutePaths": [
+      "src/config.ts:164-170 WB_NODE_MODULES, ZCODE_CLI, CODEBUDDY_CLI, QODER_CLI, GUI_SCAN_ROOTS=['D:\\\\','C:\\\\']",
+      "src/config.ts per-target literals: :286,:294,:304,:307,:314,:317,:324,:333,:367,:375,:383,:409,:418,:427,:436,:445,:455-457,:474,:483,:492,:501,:510,:530,:548 (rename-proof fallback only for Qoder: resolveRenameableExe :192-213)",
+      "scripts/build.mjs:23 'C:/dsh/node_modules' and :37 'D:/Project/deepseek-harness-master/deepseek-harness-master'"
+    ],
+    "otherInvariants": [
+      "src/settings.ts:38 HARNESS_PILOT_HOME",
+      "src/tasks.ts:15 TERMINAL vs :17 TaskStatus — a new status not added to TERMINAL desynchronises status()/list()/client running-check (client/client.js:551)",
+      "src/tasks.ts:400-401 only callback.notify gates delivery; the global notifyOnComplete setting is inert",
+      "no retention policy on ~/.dsh/plugins/harness-pilot/tasks/ (5.5 MB single .log already)"
+    ]
+  },
+  "docCorrections": [
+    {"claim": "docs/harness-federation-plan.md:17,30 install root 'D:\\DeepSeek harness\\resources\\app.asar'", "reality": "D:\\DeepSeek harness does not exist (Test-Path False); install root is D:\\DeepSeek"},
+    {"claim": "docs/harness-federation-plan.md:136 provider shape includes agentRouteDefaults and prepareContinuable", "reality": "host interface declares both as optional (docs/verified/host-api-0.2.0-rc.2.md:267,269, teammate asar extraction) but src/provider.ts:49-59 implements only name/capabilities/inheritsParentContext/start; grep for those members in src/ = 0 matches"},
+    {"claim": "docs/harness-federation-plan.md:191 'settings.plugins.tab (not declared in this build, use plugins.item)'", "reality": "settings.plugins.tab IS declared by the host (docs/verified/host-api-0.2.0-rc.2.md:29,59-65 -> dsh-client-ui-settings-plugins/lib/client.js:208-211); that report also notes settings.plugins.item does not exist, the real key is plugins.item. Plugin-side registration client/client.js:684 is valid; probe/client-register-check.mjs:62 asserts it. Host declaration cross-referenced, not independently re-verified (client Inspect timed out)"}
+  ],
+  "unconfirmed": [
+    "host-side declaration of the settings.plugins.tab slot: client Inspect timed out twice; taken from docs/verified/host-api-0.2.0-rc.2.md:29,59-65 (teammate asar extraction) — cross-referenced, not independently re-verified",
+    "whether ~/.dsh/plugins/harness-pilot/probe/workbuddy-ai-dispatch.mjs is current",
+    "who writes ~/.dsh/plugins/harness-pilot/unlimited-live.json (no reader inside the repo)",
+    "runtime behaviour of the acp interactive-session path (no acp branch in SessionRegistry.create)",
+    "whether the running host's ctx.subagents.list() returns provider names (plugin tolerates its absence: src/provider.ts:175)",
+    "lib/*.js freshness verified by content spot-check + mtime only (read-only audit; no rebuild performed)"
+  ]
+}

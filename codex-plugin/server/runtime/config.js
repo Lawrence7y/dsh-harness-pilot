@@ -294,7 +294,7 @@ export const KNOWN_TARGETS = [
         description: '本机 harness；可用性、模型与权限以实时探测为准',
         transport: 'cdp',
         order: ['cdp', 'window'],
-        command: 'D:\\Qoder CN IDE\\Qoder CN IDE.exe',
+        command: 'D:\\Qoder CNide\\Qoder CN IDE.exe',
         window: { process: 'Qoder CN IDE.exe', title: '/Qoder/i' },
         cdp: { launchArgs: ['--remote-debugging-port=<port>'], port: 9336 },
     }),

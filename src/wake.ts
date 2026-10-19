@@ -15,6 +15,10 @@
 import { createUserMessage, type ContentBlock } from '@deepseek-ai/dsh-llm'
 import type { RuntimeSettings } from './settings.js'
 import type { TaskCallback, TaskResult, TaskView } from './tasks.js'
+// 身份对照：**唯一实现**在 `task-tools.ts`（`compareIdentity` / `identityVerdictLine` /
+// `actualIdentityLines` / `mismatchLines`）。回执是插件**唯一**写进 DSH 会话的东西，
+// 所以「请求值 vs 实际回报」必须在这里可见 —— 否则用户在会话里永远看不到归因。
+import { actualIdentityLines, identityVerdictLine, mismatchLines, compareIdentity } from './task-tools.js'
 
 /** `Agent` 的最小面：只需要 followup（排队新 turn 并唤醒驱动）。 */
 export interface AgentLike {
@@ -67,6 +71,29 @@ export function buildReceipt(
   const lines: string[] = []
   lines.push('Harness Pilot 子代理任务完成回执。用户已要求任务完成后唤醒原会话、检查工作并继续原任务。')
   lines.push(`回执 ID：${view.task_id}；目标：${view.target}${view.model === null ? '' : `（model=${view.model}）`}；终态：${view.status}。`)
+  // 稳定回执 ID（outbox 持久化后才有）：收件端按它去重 —— 同一 ID 重复投递只处理一次；
+  // delivered 只表示宿主接受了投递，**不等于** Leader 已读过或处理。
+  if (view.callback?.receiptId !== undefined) {
+    lines.push(`投递去重 ID：${view.callback.receiptId}（同一 ID 的重复回执请忽略，不要重复处理；结果以任务账本为准）。`)
+  }
+  // 持久逻辑会话（P1）：把原生会话与恢复能力一并告知，Leader 追问时用它而不是重新派发。
+  if (view.session !== undefined) {
+    lines.push(`逻辑会话：${view.session.logicalId}`
+      + `${view.session.nativeSessionId === undefined ? '' : `（原生会话 ${view.session.nativeSessionId}，可精确恢复）`}`
+      + `；状态 ${view.session.status ?? '未知'}。追问请复用该逻辑会话 ID，不要新建。`)
+  }
+  /**
+   * ── 执行身份（请求值 vs 实际回报）──
+   *
+   * 这一段是**归因**，不是装饰：`view.model` 是**请求值**，而实际用了什么只有通道/CLI 的回报能说。
+   * 三态都写出来（一致 / 不一致 / 未完整回报），并给出**一行结论**，让读回执的人不必自己比对。
+   * 未知即未知：没有回报的字段一律写「未回报」，绝不拿请求值顶替。
+   */
+  lines.push('----- 执行身份（请求值 vs 实际回报）-----')
+  lines.push(`  结论：${identityVerdictLine(compareIdentity(view))}`)
+  for (const line of actualIdentityLines(view)) lines.push(line)
+  for (const line of mismatchLines(view)) lines.push(line)
+  lines.push('----- 执行身份结束 -----')
   lines.push(`工作区：${view.cwd}。完整结果：${view.result_path}（过程日志：${view.log_path}）。`)
   if (view.diagnostic !== null && view.diagnostic.length > 0) lines.push(`诊断：${view.diagnostic}`)
   lines.push('请先调用 harness_task_status 读取任务结果，并独立核验实际改动和必要测试。')

@@ -1,0 +1,917 @@
+{
+  "probe": {
+    "schemaVersion": "1.0.0",
+    "generatedAtLocal": "2026-10-13T17:11:13+08:00",
+    "generatedAtUtc": "2026-10-13T09:11:13Z",
+    "probeHost": {
+      "os": "Windows",
+      "account": "win-b7kic1tnl6r\\administrator",
+      "shell": "pwsh 7.6.6"
+    },
+    "method": "Read-only reconnaissance. Only used: --version, --help, status, --list-models, models, login status / auth status (read-only), config-file reads, bundle string scans, asar header reads. Every process launched with an explicit argv and a hard timeout.",
+    "safety": {
+      "loginPerformed": false,
+      "logoutPerformed": false,
+      "credentialsWrittenOrMoved": false,
+      "tokenValuesRecordedInThisFile": false,
+      "vendorInstallationsModified": false,
+      "tempScratchOnly": "Isolation tests used freshly created directories under %TEMP% (hp-iso*). No vendor config directory was written.",
+      "exposureNote": "During raw config reads, one env-var token value (claude settings.json ANTHROPIC_AUTH_TOKEN) and one provider apiKey (zcode cli/config.json) appeared in tool output. Those values are deliberately NOT reproduced anywhere in this file; only key NAMES and existence are recorded.",
+      "liveAccountsUntouched": [
+        "C:\\Users\\Administrator\\.dsh\\harness-accounts\\qoder-cn-a",
+        "C:\\Users\\Administrator\\.dsh\\harness-accounts\\qoder-cn-b",
+        "C:\\Users\\Administrator\\.dsh\\harness-accounts\\workbuddy-a",
+        "C:\\Users\\Administrator\\.dsh\\harness-accounts\\workbuddy-ai-b"
+      ]
+    },
+    "confidenceLegend": {
+      "measured": "Directly observed in this session from a real process launch, a real command output, or a real file read. Raw argv + trimmed output recorded in evidence[].",
+      "inferred": "Not directly observed; derived from --help text, bundle string presence, file layout, or vendor documentation. The derivation is stated.",
+      "unknown": "Not determined. Reason recorded. Never converted into a claim."
+    },
+    "explicitNonClaim": "NOTHING in this file claims any harness is 'usable'. No live model request was issued for any harness (that would spend the user's quota). Exit code 0, a readable identity, or a non-empty model catalog are NOT treated as proof of a working model request."
+  },
+
+  "harnesses": {
+
+    "dsh-native": {
+      "displayName": "DSH (native baseline)",
+      "inProcess": true,
+      "confidence": "measured",
+      "entryPath": null,
+      "entryPathNote": "In-process runtime, not a CLI. There is no argv entry point into the RUNNING DSH from this session.",
+      "version": {
+        "value": "0.2.0-rc.2",
+        "packages": ["@deepseek-ai/dsh-desktop", "dsh-desktop-runtime"],
+        "commit": "04f392c9ddd144fa426da2045178797da6db6c11",
+        "installRoot": "D:\\DeepSeek",
+        "source": "provided as verified ground truth for this task (not re-derived)",
+        "confidence": "measured"
+      },
+      "electronVersionFile": { "path": "D:\\DeepSeek\\version", "raw": "44.0.0", "note": "This is the Electron version file, NOT the DSH version." },
+      "transports": {
+        "inProcess": { "supported": true, "evidence": "7 'DeepSeek Harness' processes running (Get-Process); plugin @dsh-external/dsh-harness-pilot 0.1.1 junction-linked into profile 'desktop'." },
+        "acp": { "supported": "unknown" },
+        "appServerJsonRpc": { "supported": "unknown" },
+        "headlessOneShot": { "supported": false, "note": "No CLI entry into the running build." },
+        "ptyTui": { "supported": "unknown" },
+        "guiCdpWindow": { "supported": "unknown", "note": "Electron desktop app; CDP/window attachment not probed by this teammate." }
+      },
+      "modelSelection": { "mechanism": "unknown (host-side; out of scope for CLI probe)" },
+      "providerConfig": { "files": ["D:\\DeepSeek\\resources\\app.asar"], "env": ["DSH_*"] },
+      "multiAccountIsolation": {
+        "switch": "C:\\Users\\Administrator\\.dsh\\harness-accounts\\<account>",
+        "tested": false,
+        "result": "Four account roots observed (existence only, contents not inspected beyond top-level names): qoder-cn-a, qoder-cn-b, workbuddy-a, workbuddy-ai-b."
+      },
+      "sessionResume": { "mechanism": "unknown" },
+      "permissions": { "note": "DSH permission presets are host-side; NOT conflated with any CLI's own flags." },
+      "reasoningEffort": { "note": "host-side; not probed." },
+      "authStatus": { "loggedIn": "unknown", "identityFingerprint": null },
+      "staleCopiesObserved": [
+        "C:\\Users\\Administrator\\.dsh\\dist\\node_modules\\@deepseek-ai\\dsh (0.1.1-rc.1) - provided ground truth, NOT running",
+        "C:\\dsh\\node_modules\\@deepseek-ai\\dsh (0.2.0-rc.1) - provided ground truth, NOT running",
+        "D:\\Project\\deepseek-harness-master\\deepseek-harness-master (0.1.0-rc.8) - provided ground truth, NOT running",
+        "C:\\Users\\Administrator\\.workbuddy\\binaries\\node\\versions\\22.22.2\\node_modules\\@deepseek-ai\\dsh (0.1.7-rc.2) - ADDITIONAL non-running copy found by this probe; target of the dsh.cmd shim in that node prefix. Not previously listed, and explicitly NOT the running version."
+      ],
+      "evidence": [
+        { "argv": "Get-ChildItem D:\\DeepSeek", "exitCode": 0, "stdout": "DeepSeek Harness.exe (244481512 bytes), resources/, version file containing '44.0.0', locales/ ..." },
+        { "argv": "Get-Content C:\\Users\\Administrator\\.workbuddy\\binaries\\node\\versions\\22.22.2\\node_modules\\@deepseek-ai\\dsh\\package.json", "exitCode": 0, "stdout": "name=@deepseek-ai/dsh version=0.1.7-rc.2 (STALE COPY, not running)" },
+        { "argv": "Get-Process | Where ProcessName -match 'DeepSeek'", "exitCode": 0, "stdout": "7 x 'DeepSeek Harness' processes" }
+      ]
+    },
+
+    "codex": {
+      "displayName": "Codex CLI",
+      "confidence": "measured",
+      "entryPath": "C:\\Users\\Administrator\\.codex\\plugins\\.plugin-appserver\\codex.exe",
+      "shimPath": null,
+      "entryResolution": "Already a native .exe. No shim. NOT on PATH ('Get-Command codex' returns nothing). Launched directly.",
+      "shimWrappingRequired": "none",
+      "version": { "value": "codex-cli 0.160.1", "confidence": "measured" },
+      "transports": {
+        "headlessOneShot": { "supported": true, "flags": ["exec (alias: e)", "exec -s read-only|workspace-write|danger-full-access", "exec --json (JSONL events to stdout)", "exec -o/--output-last-message <FILE>", "exec --output-schema <FILE>", "exec --ephemeral", "review (non-interactive code review)"], "confidence": "measured" },
+        "appServerJsonRpc": { "supported": true, "flags": ["app-server", "app-server --listen <URL>", "--listen stdio:// (default) | unix:// | unix://PATH | ws://IP:PORT | off", "app-server --stdio", "app-server daemon", "app-server proxy", "app-server generate-ts", "app-server generate-json-schema", "exec-server (experimental)"], "confidence": "measured" },
+        "remoteControl": { "supported": true, "flags": ["remote-control", "--remote <ws://host:port|wss://...|unix://...>", "--remote-auth-token-env <ENV_VAR>"], "confidence": "measured" },
+        "ptyTui": { "supported": true, "flags": ["default interactive TUI", "--no-alt-screen", "--no-daemon"], "confidence": "measured" },
+        "guiCdpWindow": { "supported": true, "flags": ["app (Launch the Desktop app)", "computer-use plugin", "browser plugin"], "confidence": "measured" },
+        "mcp": { "supported": true, "flags": ["mcp"], "confidence": "measured" },
+        "acp": { "supported": false, "note": "No 'acp' subcommand or flag appears anywhere in 'codex --help' (top-level subcommand list enumerated: agents, exec, review, login, logout, mcp, plugin, app-server, remote-control, app, completion, update, doctor, sandbox, debug, apply, resume, queue, archive, delete, migrate-rollouts, unarchive, fork, cloud, exec-server, features, help).", "confidence": "measured" }
+      },
+      "modelSelection": {
+        "flag": "-m, --model <MODEL>",
+        "listCommand": "codex debug models",
+        "listCommandNote": "Documented as 'Render the raw model catalog as JSON'. Output is 605185 bytes. Top-level key: models (array). Real per-model field: slug (NOT id - id is empty string).",
+        "listCount": 10,
+        "list": [
+          { "slug": "gpt-6.1-sol", "displayName": "GPT-6.1-Sol", "visibility": "list", "contextWindow": 500000 },
+          { "slug": "gpt-6-astra", "displayName": "GPT-6-Astra", "visibility": "list", "contextWindow": 272000 },
+          { "slug": "gpt-6-sol", "displayName": "GPT-6-Sol", "visibility": "list", "contextWindow": 272000 },
+          { "slug": "gpt-6-luna", "displayName": "GPT-6-Luna", "visibility": "list", "contextWindow": 272000 },
+          { "slug": "gpt-reserve", "displayName": "GPT-Reserve", "visibility": "hide", "contextWindow": 272000 },
+          { "slug": "gpt-5.6-sol", "displayName": "GPT-5.6-Sol", "visibility": "list", "contextWindow": 272000 },
+          { "slug": "gpt-5.6-terra", "displayName": "GPT-5.6-Terra", "visibility": "list", "contextWindow": 272000 },
+          { "slug": "gpt-5.6-luna", "displayName": "GPT-5.6-Luna", "visibility": "list", "contextWindow": 272000 },
+          { "slug": "gpt-5.5", "displayName": "GPT-5.5", "visibility": "hide", "contextWindow": 272000 },
+          { "slug": "codex-auto-review", "displayName": "Codex Auto Review", "visibility": "hide", "contextWindow": 272000 }
+        ],
+        "configDefault": "model = \"gpt-6.1-sol\" (from config.toml)",
+        "confidence": "measured"
+      },
+      "providerConfig": {
+        "files": ["C:\\Users\\Administrator\\.codex\\config.toml"],
+        "observedTopLevelKeys": ["model", "model_context_window", "model_reasoning_effort", "service_tier", "model_provider", "notify", "desktop", "windows", "features", "projects", "marketplaces", "plugins", "model_providers", "mcp_servers", "memories"],
+        "providerNames": ["custom (name = \"OpenAI\", wire_api = \"responses\", requires_openai_auth = true)"],
+        "env": ["CODEX_HOME"],
+        "confidence": "measured"
+      },
+      "multiAccountIsolation": {
+        "switch": "CODEX_HOME",
+        "tested": true,
+        "result": "WORKS. With CODEX_HOME pointed at a fresh %TEMP% directory: exit 1, stderr 'Not logged in'. With the default CODEX_HOME: exit 0, stderr 'Logged in using ChatGPT'.",
+        "confidence": "measured"
+      },
+      "sessionResume": {
+        "mechanisms": ["codex resume [SESSION_ID] [PROMPT] (--last to skip the picker)", "codex fork (picker; --last)", "codex exec resume (id / --last)", "codex exec fork", "codex queue --thread <UUID|name> --message <TEXT>", "codex agents (browse sessions on the shared app-server daemon)"],
+        "confidence": "measured"
+      },
+      "permissions": {
+        "sandbox": "-s, --sandbox <read-only|workspace-write|danger-full-access>",
+        "approval": "-a, --ask-for-approval <on-request|never>",
+        "others": ["--approve-for-me", "--dangerously-bypass-approvals-and-sandbox", "--dangerously-bypass-hook-trust", "sandbox (subcommand)", "config.toml [windows] sandbox = \"elevated\""],
+        "confidence": "measured"
+      },
+      "reasoningEffort": {
+        "mechanism": "-c model_reasoning_effort=<level> (config override) and config.toml key model_reasoning_effort (currently \"medium\"); per-model fields default_reasoning_level + supported_reasoning_levels exist in the catalog JSON",
+        "valuesEnumerated": "unknown (supported_reasoning_levels is an array of objects; values not projected by this probe)",
+        "confidence": "measured"
+      },
+      "authStatus": {
+        "loggedIn": true,
+        "identityFingerprint": null,
+        "identityFingerprintNote": "The CLI prints 'Logged in using ChatGPT' and no user id/email fingerprint.",
+        "readOnlyCommand": "codex login status",
+        "confidence": "measured"
+      },
+      "evidence": [
+        { "argv": "\"C:\\Users\\Administrator\\.codex\\plugins\\.plugin-appserver\\codex.exe\" \"--version\"", "exitCode": 0, "stdout": "codex-cli 0.160.1", "stderr": "" },
+        { "argv": "\"...codex.exe\" \"login\" \"status\"", "exitCode": 0, "stdout": "", "stderr": "Logged in using ChatGPT" },
+        { "argv": "\"...codex.exe\" \"login\" \"status\"  [env CODEX_HOME=<%TEMP%\\hp-iso\\codex-home>]", "exitCode": 1, "stdout": "", "stderr": "WARNING: proceeding, even though we could not create PATH aliases: Refusing to create helper binaries under temporary dir \"C:\\Users\\Administrator\\AppData\\Local\\Temp\\\" (codex_home: AbsolutePathBuf(\"...\\hp-iso\\codex-home\"))\nNot logged in" },
+        { "argv": "\"...codex.exe\" \"debug\" \"models\"", "exitCode": 0, "stdout": "605185 bytes of JSON; top key 'models'; 10 entries; slugs: gpt-6.1-sol, gpt-6-astra, gpt-6-sol, gpt-6-luna, gpt-reserve, gpt-5.6-sol, gpt-5.6-terra, gpt-5.6-luna, gpt-5.5, codex-auto-review" },
+        { "argv": "\"...codex.exe\" \"app-server\" \"--help\"", "exitCode": 0, "stdout": "--listen <URL>  Transport endpoint URL. Supported values: `stdio://` (default), `unix://`, `unix://PATH`, `ws://IP:PORT`, `off`" }
+      ]
+    },
+
+    "claude-code": {
+      "displayName": "Claude Code",
+      "confidence": "measured",
+      "entryPath": "C:\\Users\\Administrator\\.workbuddy\\binaries\\node\\versions\\22.22.2\\node_modules\\@anthropic-ai\\claude-code\\bin\\claude.exe",
+      "shimPath": "C:\\Users\\Administrator\\.workbuddy\\binaries\\node\\versions\\22.22.2\\claude.cmd",
+      "entryResolution": "claude.cmd is a plain npm-style pass-through: it calls \"%dp0%\\node_modules\\@anthropic-ai\\claude-code\\bin\\claude.exe\" %*. The target is a real .exe, so NO node wrapper and NO ELECTRON_RUN_AS_NODE is required. Shim content read verbatim.",
+      "shimWrappingRequired": "none (shim forwards to a native exe)",
+      "vendorSharedStorageWarning": "INSTALLED UNDER WORKBUDDY'S BUNDLED NODE PREFIX (C:\\Users\\Administrator\\.workbuddy\\binaries\\node\\versions\\22.22.2). This is vendor-shared storage, not an isolated per-harness install. WorkBuddy owns the node runtime and the node_modules tree that claude.cmd resolves into.",
+      "version": { "value": "2.1.291 (Claude Code)", "confidence": "measured" },
+      "transports": {
+        "headlessOneShot": { "supported": true, "flags": ["-p, --print", "--output-format text|json|stream-json (only with --print)", "--input-format text|stream-json (only with --print)", "--json-schema <schema>", "--include-partial-messages", "--max-turns", "--fallback-model"], "confidence": "measured" },
+        "backgroundSessions": { "supported": true, "flags": ["--bg, --background", "claude agents", "claude attach <id|name>", "claude logs <id|name>", "claude stop|kill <id>", "claude rm <id>", "claude respawn [--all]"], "confidence": "measured" },
+        "ptyTui": { "supported": true, "flags": ["default interactive session", "--ax-screen-reader"], "confidence": "measured" },
+        "gateway": { "supported": true, "flags": ["claude gateway (enterprise auth/telemetry gateway)"], "confidence": "measured" },
+        "mcp": { "supported": true, "flags": ["claude mcp", "--mcp-config <configs...>", "--strict-mcp-config"], "confidence": "measured" },
+        "acp": { "supported": false, "note": "No 'acp' subcommand or flag in 'claude --help' (312 lines enumerated).", "confidence": "measured" },
+        "appServerJsonRpc": { "supported": false, "note": "No app-server/JSON-RPC mode in --help.", "confidence": "measured" },
+        "guiCdpWindow": { "supported": "unknown" }
+      },
+      "modelSelection": {
+        "flag": "--model <model> (alias such as 'fable'/'opus'/'sonnet', or a full model name)",
+        "listCommand": null,
+        "listCommandNote": "No model-list command appears in 'claude --help' (312 lines). Model aliases used by this install come from the settings.json env block (ANTHROPIC_MODEL, ANTHROPIC_DEFAULT_OPUS_MODEL, ANTHROPIC_DEFAULT_SONNET_MODEL, ANTHROPIC_DEFAULT_HAIKU_MODEL, ANTHROPIC_DEFAULT_FABLE_MODEL) - those are configured, not probed.",
+        "listCount": 0,
+        "confidence": "measured (absence), inferred (that no other list mechanism exists)"
+      },
+      "providerConfig": {
+        "files": [
+          "C:\\Users\\Administrator\\.claude\\settings.json (contains an env block; env KEY NAMES recorded, values NOT recorded)",
+          "C:\\Users\\Administrator\\.claude\\config.json (29 bytes: {\"primaryApiKey\": \"any\"})",
+          "C:\\Users\\Administrator\\.claude.json (top-level key names read; includes projects, mcpServers, pluginUsage, skillUsage, machineID, userID)",
+          "C:\\Users\\Administrator\\.claude\\ (projects/, sessions/, skills/, plugins/, shell-snapshots/, daemon/, ide/)",
+          "C:\\Users\\Administrator\\.config\\claude\\ (exists)"
+        ],
+        "settingsEnvKeyNames": ["ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_BASE_URL", "ANTHROPIC_MODEL", "ANTHROPIC_DEFAULT_FABLE_MODEL", "ANTHROPIC_DEFAULT_FABLE_MODEL_NAME", "ANTHROPIC_DEFAULT_HAIKU_MODEL", "ANTHROPIC_DEFAULT_OPUS_MODEL", "ANTHROPIC_DEFAULT_OPUS_MODEL_NAME", "ANTHROPIC_DEFAULT_SONNET_MODEL", "ANTHROPIC_DEFAULT_SONNET_MODEL_NAME"],
+        "env": ["CLAUDE_CONFIG_DIR"],
+        "confidence": "measured"
+      },
+      "multiAccountIsolation": {
+        "switch": "CLAUDE_CONFIG_DIR",
+        "tested": true,
+        "result": "WORKS. With CLAUDE_CONFIG_DIR=<fresh %TEMP% dir>: auth status returns loggedIn=false, authMethod='none', configDirectory pointed at the temp dir, exit 1. Default: loggedIn=true, authMethod='oauth_token', exit 0. Note the temp dir also received backup/ + .claude.json.",
+        "confidence": "measured"
+      },
+      "sessionResume": {
+        "mechanisms": ["-c, --continue", "-r, --resume [value] (session id or interactive picker)", "--fork-session", "--session-id <uuid>", "claude agents / attach / logs / respawn for background sessions"],
+        "confidence": "measured"
+      },
+      "permissions": {
+        "permissionMode": "--permission-mode <acceptEdits|auto|bypassPermissions|manual|dontAsk|plan>",
+        "permissionPrompts": "--permission-prompts <host|none> and --permission-prompt-tool (only with --print)",
+        "others": ["--dangerously-skip-permissions", "--allow-dangerously-skip-permissions", "--allowedTools/--allowed-tools", "--disallowedTools/--disallowed-tools", "--safe-mode", "--setting-sources user,project,local", "--settings <file-or-json>", "--add-dir"],
+        "confidence": "measured"
+      },
+      "reasoningEffort": {
+        "mechanism": "--effort <level>  ('Effort level for the current session')",
+        "valuesEnumerated": "unknown (help prints no choices for --effort)",
+        "confidence": "measured (flag exists), unknown (allowed values)"
+      },
+      "authStatus": {
+        "loggedIn": true,
+        "authMethod": "oauth_token",
+        "apiProvider": "firstParty",
+        "identityFingerprint": null,
+        "identityFingerprintNote": "claude auth status prints no user id/email. JSON keys returned: loggedIn, authMethod, apiProvider, analyticsDisabled, projectsDirectory, configDirectory.",
+        "readOnlyCommand": "claude auth status",
+        "confidence": "measured"
+      },
+      "evidence": [
+        { "argv": "\"<prefix>\\node_modules\\@anthropic-ai\\claude-code\\bin\\claude.exe\" \"--version\"", "exitCode": 0, "stdout": "2.1.291 (Claude Code)", "stderr": "" },
+        { "argv": "\"...\\claude.exe\" \"auth\" \"status\"", "exitCode": 0, "stdout": "{\n  \"loggedIn\": true,\n  \"authMethod\": \"oauth_token\",\n  \"apiProvider\": \"firstParty\",\n  \"analyticsDisabled\": false,\n  \"projectsDirectory\": \"C:\\\\Users\\\\Administrator\\\\.claude\\\\projects\",\n  \"configDirectory\": \"C:\\\\Users\\\\Administrator\\\\.claude\"\n}", "stderr": "" },
+        { "argv": "\"...\\claude.exe\" \"auth\" \"status\"  [env CLAUDE_CONFIG_DIR=<%TEMP%\\hp-iso\\claude-cfg>]", "exitCode": 1, "stdout": "{ \"loggedIn\": false, \"authMethod\": \"none\", \"apiProvider\": \"firstParty\", ... \"configDirectory\": \"C:\\\\Users\\\\Administrator\\\\AppData\\\\Local\\\\Temp\\\\hp-iso\\\\claude-cfg\" }", "stderr": "" },
+        { "argv": "\"...\\claude.exe\" \"--help\"", "exitCode": 0, "stdout": "312 lines. --permission-mode <mode> (choices: \"acceptEdits\", \"auto\", \"bypassPermissions\", \"manual\", \"dontAsk\", \"plan\"); --output-format (choices: \"text\", \"json\", \"stream-json\"); --input-format (choices: \"text\", \"stream-json\"); -p/--print; -r/--resume [value]; --fork-session; --session-id <uuid>; --effort <level>" },
+        { "argv": "Get-Content <prefix>\\claude.cmd", "exitCode": 0, "stdout": "\"%dp0%\\node_modules\\@anthropic-ai\\claude-code\\bin\\claude.exe\"   %*" }
+      ]
+    },
+
+    "opencode": {
+      "displayName": "OpenCode",
+      "confidence": "measured",
+      "entryPath": "C:\\Users\\Administrator\\.workbuddy\\binaries\\node\\versions\\22.22.2\\node_modules\\@opencode\\cli\\bin\\opencode.exe",
+      "shimPath": "C:\\Users\\Administrator\\.workbuddy\\binaries\\node\\versions\\22.22.2\\opencode.cmd (and an identical opencode2.cmd)",
+      "entryResolution": "opencode.cmd calls \"%dp0%\\node_modules\\@opencode\\cli\\bin\\opencode.exe\" %* - a real .exe, no node wrapper needed.",
+      "shimWrappingRequired": "none",
+      "vendorSharedStorageWarning": "Same WorkBuddy bundled-node prefix as claude/pi/dsh. Vendor-shared storage.",
+      "version": { "value": "opencode v2.0.14", "confidence": "measured" },
+      "transports": {
+        "acp": { "supported": true, "flags": ["opencode acp  -- 'Start an Agent Client Protocol server'"], "confidence": "measured" },
+        "headlessOneShot": { "supported": true, "flags": ["opencode run [<message...>]", "run --format default|json", "run -m/--model provider/model#variant", "run --thinking", "run --file/-f", "run --auto", "run --fork"], "confidence": "measured" },
+        "httpServer": { "supported": true, "flags": ["opencode serve --hostname --port --cors --service --stdio  ('Start the v2 API and web server')", "opencode api (make a request to the running server)", "opencode pair"], "confidence": "measured" },
+        "backgroundService": { "supported": true, "flags": ["opencode service", "--standalone (run with a private server instead of the background service)", "--server <url>"], "confidence": "measured" },
+        "ptyTui": { "supported": true, "flags": ["default TUI", "opencode mini (minimal interactive interface)"], "confidence": "measured" },
+        "mcp": { "supported": true, "flags": ["opencode mcp"], "confidence": "measured" },
+        "guiCdpWindow": { "supported": "unknown" }
+      },
+      "modelSelection": {
+        "flag": "-m, --model <provider/model#variant> (also --model on the top-level command)",
+        "listCommand": "opencode models",
+        "listCommandNote": "Documented as 'List all available models'. MEASURED EMPTY: exit 0, zero bytes on stdout, zero bytes on stderr, both plain and with --standalone. Therefore no real model list could be obtained.",
+        "listCount": 0,
+        "confidence": "measured"
+      },
+      "providerConfig": {
+        "files": [
+          "C:\\Users\\Administrator\\.config\\opencode\\opencode.json (344 bytes; top-level keys: $schema, plugin, provider, mcp)",
+          "C:\\Users\\Administrator\\.config\\opencode\\opencode.jsonc (112 bytes)",
+          "C:\\Users\\Administrator\\.local\\share\\opencode\\ (auth.json, account.json, opencode.db ~3.9 GB, log/, storage/, snapshot/)"
+        ],
+        "providerNames": ["OpenCode Console (Default)", "OpenRouter", "Xiaomi", "rea (local MCP server, from opencode.json)"],
+        "env": ["OPENCODE_CONFIG", "OPENCODE_CONFIG_DIR", "OPENCODE_CONFIG_CONTENT", "OPENCODE_DB", "OPENCODE_MODELS_PATH", "OPENCODE_MODELS_URL", "XDG_CONFIG_HOME", "XDG_DATA_HOME", "XDG_STATE_HOME", "XDG_CACHE_HOME"],
+        "envEvidence": "OPENCODE_* and XDG_* names extracted by ASCII scan of opencode.exe (first 80 MB + remaining 119 MB scanned as text).",
+        "confidence": "measured (paths, env names, provider names), measured (no secret values read)"
+      },
+      "multiAccountIsolation": {
+        "switch": "tested: XDG_CONFIG_HOME, XDG_DATA_HOME, OPENCODE_CONFIG, OPENCODE_CONFIG_DIR (+OPENCODE_DB). Candidate from help/bundle: none of these worked.",
+        "tested": true,
+        "result": "NOT ACHIEVED for credentials. 'opencode auth list' returned the identical 3 stored providers under every tested override, and also with --standalone. OPENCODE_CONFIG_DIR redirected nothing (no files created). XDG_DATA_HOME did create a new tree but did not change the credential result. Strong probable cause (inferred, not proven): a shared background service is running - PID 11792  CommandLine: opencode.exe serve --service - so auth state comes from the shared service/DB rather than the per-invocation env.",
+        "credentialStorePath": "C:\\Users\\Administrator\\.local\\share\\opencode\\auth.json and account.json (existence + size only; contents not read)",
+        "confidence": "measured (negative result), inferred (cause)"
+      },
+      "sessionResume": {
+        "mechanisms": ["--continue, -c (continue the last session)", "--session, -s <string> (session ID to continue)", "run --fork (fork before continuing)", "opencode session list | export | import | delete"],
+        "confidence": "measured"
+      },
+      "permissions": {
+        "flags": ["--auto (Auto-approve permissions that are not explicitly denied)", "config-level: opencode.jsonc contains experimental.policies with a provider.use deny rule (measured in 'opencode debug config' output)"],
+        "confidence": "measured"
+      },
+      "reasoningEffort": {
+        "mechanism": "none found. 'run --thinking' only toggles display of thinking blocks; no effort-level flag in 'opencode --help' or 'opencode run --help'.",
+        "confidence": "measured (absence in help)"
+      },
+      "authStatus": {
+        "loggedIn": "unknown-as-a-boolean (the CLI exposes no logged-in flag here)",
+        "providersWithStoredCredentials": ["OpenCode Console (Default)", "OpenRouter", "Xiaomi"],
+        "identityFingerprint": null,
+        "readOnlyCommand": "opencode auth list",
+        "confidence": "measured"
+      },
+      "evidence": [
+        { "argv": "\"<prefix>\\node_modules\\@opencode\\cli\\bin\\opencode.exe\" \"--version\"", "exitCode": 0, "stdout": "opencode v2.0.14", "stderr": "" },
+        { "argv": "\"...\\opencode.exe\" \"acp\" \"--help\"", "exitCode": 0, "stdout": "DESCRIPTION\n  Start an Agent Client Protocol server\nUSAGE\n  opencode acp [flags]" },
+        { "argv": "\"...\\opencode.exe\" \"auth\" \"list\"", "exitCode": 0, "stdout": "OpenCode Console  Default                     stored\nOpenRouter        OpenRouter                  stored\nXiaomi            Xiaomi                      stored", "stderr": "" },
+        { "argv": "\"...\\opencode.exe\" \"models\"", "exitCode": 0, "stdout": "(empty - 0 bytes)", "stderr": "(empty)" },
+        { "argv": "\"...\\opencode.exe\" \"models\" \"--standalone\"", "exitCode": 0, "stdout": "(empty - 0 bytes)", "stderr": "(empty)" },
+        { "argv": "\"...\\opencode.exe\" \"auth\" \"list\"  [env XDG_CONFIG_HOME, XDG_DATA_HOME, OPENCODE_CONFIG, OPENCODE_CONFIG_DIR, OPENCODE_DB in separate runs]", "exitCode": 0, "stdout": "all five runs returned the SAME three stored providers", "stderr": "" },
+        { "argv": "Get-CimInstance Win32_Process -Filter \"Name='opencode.exe'\"", "exitCode": 0, "stdout": "ProcessId 11792  CommandLine: C:\\Users\\Administrator\\.workbuddy\\binaries\\node\\versions\\22.22.2\\node_modules\\@opencode\\cli\\bin\\opencode.exe serve --service" }
+      ]
+    },
+
+    "pi": {
+      "displayName": "Pi (pi-coding-agent)",
+      "confidence": "measured",
+      "entryPath": "C:\\Users\\Administrator\\.workbuddy\\binaries\\node\\versions\\22.22.2\\node_modules\\@earendil-works\\pi-coding-agent\\dist\\bundle\\cli.js",
+      "shimPath": "C:\\Users\\Administrator\\.workbuddy\\binaries\\node\\versions\\22.22.2\\pi.cmd",
+      "entryResolution": "pi.cmd is a JS shim: it picks %dp0%\\node.exe if present, else bare 'node', and runs \"<prog>\" \"%dp0%\\node_modules\\@earendil-works\\pi-coding-agent\\dist\\bundle\\cli.js\" %*. So the argv is: <node.exe> <cli.js> <args>. Node wrapper IS required.",
+      "shimWrappingRequired": "node (shim resolves the bundled node.exe itself; an explicit node invocation also works)",
+      "vendorSharedStorageWarning": "Same WorkBuddy bundled-node prefix. Vendor-shared storage.",
+      "version": { "value": "1.1.0", "confidence": "measured" },
+      "transports": {
+        "headlessOneShot": { "supported": true, "flags": ["-p, --print", "--mode text (default) | json | rpc", "--no-session", "--export <file> (session file to HTML and exit)"], "confidence": "measured" },
+        "rpcMode": { "supported": true, "flags": ["--mode rpc"], "note": "A documented 'rpc' output mode. Protocol framing NOT probed - only the flag's existence in --help is measured.", "confidence": "measured (flag), unknown (protocol detail)" },
+        "ptyTui": { "supported": true, "flags": ["default TUI", "--tui-mode fullscreen|regular"], "confidence": "measured" },
+        "acp": { "supported": false, "note": "No 'acp' flag or subcommand appears in 'pi --help'.", "confidence": "measured" },
+        "appServerJsonRpc": { "supported": "unknown", "note": "--mode rpc exists but was not exercised." }
+      },
+      "modelSelection": {
+        "flag": "--model <pattern> (supports 'provider/id' and optional ':thinking'), --provider <name>, --models <patterns> (Ctrl+P cycling list), --thinking <level>",
+        "listCommand": "pi --list-models [search]",
+        "listCount": 96,
+        "providerBreakdown": { "antigravity": 14, "openai": 44, "opencode-go": 31, "siliconflow": 1, "xiaomi": 6 },
+        "sample": ["antigravity/gemini-3.8-flash", "antigravity/gpt-oss-120b", "openai/gpt-5.6-sol", "openai/gpt-6.1-sol", "openai/o4-mini", "opencode-go/deepseek-v4.1-flash", "opencode-go/kimi-k3", "opencode-go/mimo-v2.6-pro", "siliconflow/deepseek-ai/DeepSeek-V4-Flash", "xiaomi/mimo-v2.6-pro"],
+        "listCommandDate": "measured 2026-10-13",
+        "confidence": "measured"
+      },
+      "providerConfig": {
+        "files": ["C:\\Users\\Administrator\\.pi\\agent\\ (exists; config dir default per --help)"],
+        "env": ["PI_CODING_AGENT_DIR (config dir, default ~/.pi/agent)", "PI_CODING_AGENT_SESSION_DIR", "PI_PACKAGE_DIR", "PI_OFFLINE", "PI_TELEMETRY", "PI_SHARE_VIEWER_URL"],
+        "providerKeyEnvNamesFromHelp": ["ANTHROPIC_API_KEY", "ANTHROPIC_AUTH_TOKEN", "ANTHROPIC_OAUTH_TOKEN", "OPENAI_API_KEY", "AZURE_OPENAI_API_KEY", "DEEPSEEK_API_KEY", "GEMINI_API_KEY", "XAI_API_KEY", "OPENROUTER_API_KEY", "ZAI_API_KEY", "ZAI_CODING_CN_API_KEY", "MOONSHOT_API_KEY", "MINIMAX_API_KEY", "OPENCODE_API_KEY", "KIMI_API_KEY", "XIAOMI_API_KEY", "XIAOMI_TOKEN_PLAN_CN_API_KEY", "XIAOMI_TOKEN_PLAN_AMS_API_KEY", "XIAOMI_TOKEN_PLAN_SGP_API_KEY"],
+        "confidence": "measured (names/paths), unknown (which are actually set)"
+      },
+      "multiAccountIsolation": {
+        "switch": "PI_CODING_AGENT_DIR",
+        "tested": true,
+        "result": "WORKS. With PI_CODING_AGENT_DIR=<fresh %TEMP% dir>, 'pi --list-models' returned 'No models available. Use /login to log into a provider...' (3 lines) instead of 96 models. The temp dir received auth.json and models-store.json, confirming the redirect.",
+        "confidence": "measured"
+      },
+      "sessionResume": {
+        "mechanisms": ["--continue, -c", "--resume, -r (select a session)", "--session <path|id>", "--session-id <id>", "--fork <path|id>", "--session-dir <dir>", "--no-session", "--name <name>"],
+        "confidence": "measured"
+      },
+      "permissions": {
+        "flags": ["--approve, -a (trust project-local files for this run)", "--no-approve, -na", "--tools, -t <allowlist/patterns>", "--exclude-tools", "--no-tools, -nt", "--no-builtin-tools, -nbt"],
+        "note": "No sandbox flag exposed; the documented read-only pattern is tool restriction, e.g. 'pi --tools read,grep,find,ls -p'.",
+        "confidence": "measured"
+      },
+      "reasoningEffort": {
+        "mechanism": "--thinking <level> and per-model shorthand '--model sonnet:high'; --models supports fixed levels like 'sonnet:high,haiku:low'",
+        "valuesEnumerated": "unknown (help shows no choice list)",
+        "confidence": "measured (flags), unknown (levels)"
+      },
+      "authStatus": {
+        "loggedIn": "unknown",
+        "reason": "Pi exposes 'pi auth <command>' whose own help says it will 'Print credentials or check provider readiness'. Running it risks printing an API key or bearer token, which this probe is forbidden to do. NOT executed.",
+        "supportingObservation": "The default config dir yields 96 models across 5 providers while an empty PI_CODING_AGENT_DIR yields 'No models available', so provider state lives in the config dir - but that is NOT evidence that a model request would succeed.",
+        "identityFingerprint": null,
+        "confidence": "unknown (deliberately not measured)"
+      },
+      "evidence": [
+        { "argv": "\"<prefix>\\node.exe\" \"<prefix>\\node_modules\\@earendil-works\\pi-coding-agent\\dist\\bundle\\cli.js\" \"--version\"", "exitCode": 0, "stdout": "1.1.0", "stderr": "" },
+        { "argv": "<same> \"--list-models\"", "exitCode": 0, "stdout": "97 lines total = 1 header + 96 model rows. Header: 'provider     model                          context  max-out  thinking  images'", "stderr": "" },
+        { "argv": "<same> \"--list-models\"  [env PI_CODING_AGENT_DIR=<%TEMP%\\hp-iso2\\pi-agent>]", "exitCode": 0, "stdout": "No models available. Use /login to log into a provider via OAuth or API key. See:\n  <prefix>\\node_modules\\@earendil-works\\pi-coding-agent\\docs\\providers.md\n  <prefix>\\node_modules\\@earendil-works\\pi-coding-agent\\docs\\models.md", "stderr": "" },
+        { "argv": "Get-Content <prefix>\\pi.cmd", "exitCode": 0, "stdout": "endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & \"%_prog%\"  \"%dp0%\\node_modules\\@earendil-works\\pi-coding-agent\\dist\\bundle\\cli.js\" %*" }
+      ]
+    },
+
+    "qoder-cn": {
+      "displayName": "Qoder CN (qoderclicn)",
+      "confidence": "measured",
+      "entryPath": "C:\\Users\\Administrator\\.qodersec\\bin\\qoderclicn.exe",
+      "shimPath": null,
+      "entryResolution": "Native .exe, launched directly. No PATH entry, no shim, no node wrapper.",
+      "shimWrappingRequired": "none",
+      "version": { "value": "1.1.41", "sidecarFile": "C:\\Users\\Administrator\\.qodersec\\bin\\qoderclicn-version.json = {\"version\": \"1.1.41\", \"channel\": \"cn\"}", "confidence": "measured" },
+      "siblingBinaries": ["qodercli.exe (global channel, version file says 1.0.45)", "qodersec.exe"],
+      "transports": {
+        "headlessOneShot": { "supported": true, "flags": ["-p, --print", "-o, --output-format <format>", "--input-format <format>", "--max-output-tokens", "-i, --prompt-interactive <text>", "--no-session-persistence (only with --print)"], "confidence": "measured" },
+        "ptyTui": { "supported": true, "flags": ["default interactive mode"], "confidence": "measured" },
+        "remoteControl": { "supported": true, "flags": ["--remote-control <id>  (Run as a headless remote-control worker)", "remote-control (subcommand: Start the remote-control daemon)", "--remote [task]", "--remote-session <id>", "--teleport <id>"], "confidence": "measured" },
+        "cloudRemote": { "supported": true, "flags": ["--remote", "--remote-session", "--teleport"], "confidence": "measured" },
+        "mcp": { "supported": true, "flags": ["mcp (subcommand)", "--mcp-config", "--strict-mcp-config", "--allowed-mcp-server-names"], "confidence": "measured" },
+        "acp": { "supported": false, "note": "The full 108-line 'qoderclicn --help' was enumerated. Subcommands are: mcp, plugins|plugin, skills|skill, hooks|hook, agents|agent, login, commit, rollback, update, remote-control, status, security, feedback, config, wiki. No 'acp' and no 'serve/stdio' subcommand exists.", "confidence": "measured" },
+        "appServerJsonRpc": { "supported": false, "note": "No app-server / JSON-RPC mode in --help.", "confidence": "measured" }
+      },
+      "modelSelection": {
+        "flag": "-m, --model <model>  (Default and New Models use model name; Custom uses modelID)",
+        "listCommand": "qoderclicn --list-models  (there is also a bare 'models' invocation path)",
+        "listCount": 0,
+        "listCommandNote": "BLOCKED BY AUTH. '--list-models' -> exit 1, stderr: 'Not logged in. Run `qoderclicn login` to authenticate.'  Bare 'models' -> exit 1, stdout: 'Not logged in · Please run /login' (22909 ms). Model list is NOT obtainable without logging in, which this probe is forbidden to do.",
+        "confidence": "measured (the failure), unknown (the list)"
+      },
+      "providerConfig": {
+        "files": ["C:\\Users\\Administrator\\.qodersec\\ (bin/ plus config root; the default user-level config root was not enumerated further)"],
+        "env": ["--config-dir <dir>  (documented flag: 'Use a custom user-level config root for this run')"],
+        "configSubcommand": ["qoderclicn config get <key>", "qoderclicn config set <key> <value>", "qoderclicn config unset <key>", "qoderclicn config get vpc_endpoint"],
+        "confidence": "measured (flag/commands), inferred (default config root path)"
+      },
+      "multiAccountIsolation": {
+        "switch": "--config-dir <dir>  (documented CLI flag, not an env var)",
+        "tested": false,
+        "result": "NOT TESTED. Reason: the default config root already reports not-logged-in, so a redirect test cannot distinguish 'isolation works' from 'nothing was there anyway'. Candidate env vars were not identified. Recorded as documented-but-unverified.",
+        "confidence": "inferred"
+      },
+      "sessionResume": {
+        "mechanisms": ["-c, --continue", "-r, --resume [id]", "--fork-session", "--session-id <id>", "--list-sessions", "--delete-session <index>", "--name <name>", "--no-session-persistence"],
+        "confidence": "measured"
+      },
+      "permissions": {
+        "permissionMode": "--permission-mode <default|accept_edits|bypass_permissions|dont_ask|auto>",
+        "others": ["--dangerously-skip-permissions", "--allowed-tools <tool>", "--disallowed-tools <tool>", "--tools <tools...>", "--add-dir <dir>", "--setting-sources user,project,local", "--settings <json>"],
+        "confidence": "measured"
+      },
+      "reasoningEffort": {
+        "mechanism": ["--reasoning-effort <level>", "--thinking <auto|adaptive|enabled|disabled>", "--thinking-budget <tokens>  (implies --thinking enabled)", "--context-window <size>"],
+        "confidence": "measured"
+      },
+      "authStatus": {
+        "loggedIn": false,
+        "identityFingerprint": null,
+        "readOnlyCommand": "qoderclicn status -o json",
+        "rawJson": { "logged_in": false, "version": "1.1.41", "allow_byok": 0 },
+        "note": "This is the DEFAULT config root. The two live DSH accounts qoder-cn-a / qoder-cn-b live under C:\\Users\\Administrator\\.dsh\\harness-accounts\\ and were NOT touched or inspected for credentials.",
+        "confidence": "measured"
+      },
+      "evidence": [
+        { "argv": "\"C:\\Users\\Administrator\\.qodersec\\bin\\qoderclicn.exe\" \"--version\"", "exitCode": 0, "stdout": "1.1.41", "stderr": "" },
+        { "argv": "\"...\\qoderclicn.exe\" \"status\" \"-o\" \"json\"", "exitCode": 0, "stdout": "{\n  \"logged_in\": false,\n  \"version\": \"1.1.41\",\n  \"allow_byok\": 0\n}", "stderr": "" },
+        { "argv": "\"...\\qoderclicn.exe\" \"--list-models\"", "exitCode": 1, "stdout": "", "stderr": "Not logged in. Run `qoderclicn login` to authenticate." },
+        { "argv": "\"...\\qoderclicn.exe\" \"models\"", "exitCode": 1, "stdout": "Not logged in · Please run /login", "stderr": "" }
+      ]
+    },
+
+    "workbuddy": {
+      "displayName": "WorkBuddy (desktop) + built-in CodeBuddy CLI",
+      "confidence": "measured",
+      "entryPath": "D:\\workbuddy\\resources\\app.asar.unpacked\\cli\\dist\\codebuddy-headless.js",
+      "appEntryPath": "D:\\workbuddy\\WorkBuddy.exe",
+      "appVersionFile": { "path": "D:\\workbuddy\\version", "raw": "37.10.3-24" },
+      "cliEntryPath": "D:\\workbuddy\\resources\\app.asar.unpacked\\cli\\dist\\codebuddy-headless.js",
+      "cliShimPath": "D:\\workbuddy\\resources\\app.asar.unpacked\\cli\\bin\\codebuddy  (extension-less Node script, shebang '#!/usr/bin/env node', 15166 bytes)",
+      "cliWorkingEntryNote": "CRITICAL: the shipped launcher bin/codebuddy is BROKEN for real commands. Any non-trivial command fails with 'Error: Cannot find module \\'../dist/codebuddy\\'' because D:\\workbuddy\\resources\\app.asar.unpacked\\cli\\dist contains ONLY: lazy-headless/, lazy-lite-wb/, codebuddy-headless.js (11938885 bytes), codebuddy-lite-wb.mjs (8567703 bytes) - the full TUI bundle dist/codebuddy is absent. '--version' and '--help' still succeed because the launcher short-circuits before the require. The working non-interactive entry is dist/codebuddy-headless.js (verified: --help emits the identical 12624-char CLI surface; --version emits 2.156.0).",
+      "shimWrappingRequired": "node (the launcher has no extension and must be run as: <node.exe> <path>\\bin\\codebuddy [args]; the headless bundle likewise: <node.exe> <path>\\dist\\codebuddy-headless.js [args])",
+      "cliVersion": { "value": "2.156.0", "confidence": "measured" },
+      "transports": {
+        "acp": { "supported": true, "flags": ["--acp  ('Start in ACP (Agent Client Protocol) mode - enables communication via stdin/stdout using ndJsonStream')", "--acp-transport <stdio|streamable-http>  (default stdio)"], "confidence": "measured" },
+        "httpServer": { "supported": true, "flags": ["--serve  ('Start HTTP server (Web UI, REST API, ACP over HTTP SSE)')", "--port <number>", "--host <string> (default 127.0.0.1)", "--auth <password|none>", "--base-path <path>", "--open"], "confidence": "measured" },
+        "headlessOneShot": { "supported": true, "flags": ["-p, --print", "--output-format text|json|stream-json", "--input-format text|stream-json", "--json-schema", "--include-partial-messages", "--max-turns", "--fallback-model", "--replay-user-messages"], "confidence": "measured" },
+        "backgroundSessions": { "supported": true, "flags": ["--bg / --background", "--name", "--exec <command>", "ps", "logs <pidOrName>", "attach <pidOrName>", "kill / stop <pidOrName>", "rm", "respawn", "agents"], "confidence": "measured" },
+        "ptyTui": { "supported": true, "flags": ["default interactive session"], "confidence": "measured" },
+        "sandbox": { "supported": true, "flags": ["--sandbox [container|<E2B API URL>]", "--sandbox-id", "--sandbox-new", "--sandbox-kill", "--sandbox-upload-dir", "--teleport <value>", "sandbox (subcommand)", "env CODEBUDDY_IS_SANDBOX=1"], "confidence": "measured" },
+        "remoteControl": { "supported": true, "flags": ["--remote-control [client]", "remote-control service", "swarm (--swarm)"], "confidence": "measured" },
+        "guiCdpWindow": { "supported": true, "note": "WorkBuddy.exe is an Electron desktop app; the CLI also exposes a Web UI via --serve --open. CDP/window attach was NOT probed here.", "confidence": "inferred" }
+      },
+      "modelSelection": {
+        "flag": "--model <model> with named aliases (help text: 'Currently supported: (fast-model, balanced-model, primary-model, deep-model)'), plus --fallback-model, --text-to-image-model, --image-to-image-model",
+        "listCommand": null,
+        "listCommandNote": "No --list-models command exists in the CLI help. The model catalog is a file instead.",
+        "catalogFile": "C:\\Users\\Administrator\\.codebuddy\\models.json (4141 bytes; top key 'models'; 11 entries)",
+        "listCount": 11,
+        "list": ["r-auto", "r-dsv4f", "r-dsv4p", "r-glm5.2", "r-glm5.1", "r-glm5v", "r-kimi2.6", "r-kimi2.7code", "r-kimi3", "r-hy3", "r-mxm3"],
+        "confidence": "measured"
+      },
+      "providerConfig": {
+        "files": [
+          "C:\\Users\\Administrator\\.codebuddy\\ (models.json, models.json.backup, user-state.json 128 bytes, web-ui-port.json 77 bytes, local_storage/, sessions/, plugins/, skills/, traces/, logs/, diagnostics/, code-ratio/, shell-snapshots/)"
+        ],
+        "cliConfigCommand": ["codebuddy config get <key>", "codebuddy config set -g <key> <value>", "codebuddy config list|ls", "codebuddy config add", "codebuddy config remove|rm"],
+        "env": ["CODEBUDDY_CONFIG_DIR", "CODEBUDDY_PROJECT_CONFIG_DIR", "CODEBUDDY_DATA_ROOT", "CODEBUDDY_MODEL", "CODEBUDDY_SMALL_FAST_MODEL", "CODEBUDDY_BIG_SLOW_MODEL"],
+        "envEvidence": "Extracted by regex over D:\\workbuddy\\resources\\app.asar.unpacked\\cli\\dist\\codebuddy-headless.js (11938885 bytes of readable JS): CODEBUDDY_CONFIG_DIR is present as a literal. Also present and deliberately NOT enumerated here: many credential-shaped names (CODEBUDDY_API_KEY, CODEBUDDY_AUTH_TOKEN, CODEBUDDY_GATEWAY_PASSWORD, CODEBUDDY_WECOM_BOT_SECRET, ...) - names only were extracted, no values were read.",
+        "confidence": "measured (paths + env names), inferred (that CODEBUDDY_CONFIG_DIR actually relocates the config)"
+      },
+      "multiAccountIsolation": {
+        "switch": "CODEBUDDY_CONFIG_DIR (literal present in the CLI bundle)",
+        "tested": true,
+        "result": "INCONCLUSIVE. The behavioural test used 'codebuddy config list', which fails identically with and without CODEBUDDY_CONFIG_DIR (both exit 1) because of the missing '../dist/codebuddy' bundle. No files were created in the temp config dir. So the env var's existence is MEASURED but its isolating effect is NOT verified.",
+        "supportingObservation": "The DSH account root C:\\Users\\Administrator\\.dsh\\harness-accounts\\workbuddy-a mirrors the ~/.codebuddy data layout (settings.json, user-state.json, web-ui-port.json, sessions/, plugins/, shell-snapshots/, traces/) - i.e. DSH isolates WorkBuddy by data root, not by the CLI's config env var.",
+        "confidence": "inferred"
+      },
+      "sessionResume": {
+        "mechanisms": ["-c, --continue", "-r, --resume [sessionId]", "--fork-session", "--session-id <uuid>", "--no-session-persistence", "ps / attach / logs / kill / stop / rm / respawn / agents"],
+        "confidence": "measured"
+      },
+      "permissions": {
+        "permissionMode": "--permission-mode <acceptEdits|bypassPermissions|default|plan|dontAsk|auto>  (does not write settings)",
+        "subagent": "--subagent-permission-mode <same choices>",
+        "others": ["-y, --dangerously-skip-permissions  (HIGH/CRITICAL still ask; full pass needs CODEBUDDY_IS_SANDBOX=1)", "--permission-mode-before-plan <mode>", "--tools <value>", "--allowedTools", "--disallowedTools", "--sandbox"],
+        "confidence": "measured"
+      },
+      "reasoningEffort": {
+        "mechanism": "--effort <level>  (minimal, low, medium, high, xhigh, max)",
+        "others": ["--autocompact <auto|tokens>"],
+        "confidence": "measured"
+      },
+      "authStatus": {
+        "loggedIn": "unknown",
+        "reason": "No read-only login-status subcommand was found in 'codebuddy --help' (no 'login', no 'auth status'), and the one candidate read-only surface ('config list' / 'config get') is unusable because of the missing bundle. C:\\Users\\Administrator\\.codebuddy\\user-state.json exists (128 bytes) but was not read for content.",
+        "identityFingerprint": null,
+        "confidence": "unknown (deliberately not measured)"
+      },
+      "evidence": [
+        { "argv": "\"<prefix>\\node.exe\" \"D:\\workbuddy\\resources\\app.asar.unpacked\\cli\\bin\\codebuddy\" \"--version\"", "exitCode": 0, "stdout": "2.156.0", "stderr": "" },
+        { "argv": "\"<prefix>\\node.exe\" \"D:\\workbuddy\\resources\\app.asar.unpacked\\cli\\bin\\codebuddy\" \"config\" \"list\"", "exitCode": 1, "stdout": "", "stderr": "Error: Cannot find module '../dist/codebuddy'\nRequire stack:\n- D:\\workbuddy\\resources\\app.asar.unpacked\\cli\\bin\\codebuddy\n    at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15) ... { code: 'MODULE_NOT_FOUND' }" },
+        { "argv": "\"<prefix>\\node.exe\" \"D:\\workbuddy\\resources\\app.asar.unpacked\\cli\\dist\\codebuddy-headless.js\" \"--version\"", "exitCode": 0, "stdout": "2.156.0", "stderr": "" },
+        { "argv": "\"<prefix>\\node.exe\" \"...\\cli\\dist\\codebuddy-headless.js\" \"--help\"", "exitCode": 0, "stdout": "12624 chars; identical surface to bin/codebuddy --help (12612 chars). Includes --acp, --acp-transport, --serve, -p/--print, --permission-mode, --effort." },
+        { "argv": "Get-ChildItem D:\\workbuddy\\resources\\app.asar.unpacked\\cli\\dist", "exitCode": 0, "stdout": "lazy-headless/  lazy-lite-wb/  codebuddy-headless.js (11938885)  codebuddy-lite-wb.mjs (8567703)   <-- no dist/codebuddy" },
+        { "argv": "Get-Content D:\\workbuddy\\version", "exitCode": 0, "stdout": "37.10.3-24" }
+      ]
+    },
+
+    "workbuddy-ai": {
+      "displayName": "WorkBuddy.AI + built-in CodeBuddy CLI",
+      "confidence": "measured",
+      "entryPath": "D:\\workbuddy ai\\WorkBuddyAI\\resources\\app.asar.unpacked\\cli\\dist\\codebuddy-headless.js",
+      "appEntryPath": "D:\\workbuddy ai\\WorkBuddyAI\\WorkBuddyAI.exe",
+      "appVersionFile": { "path": "D:\\workbuddy ai\\WorkBuddyAI\\version", "raw": "37.10.3-24" },
+      "cliEntryPath": "D:\\workbuddy ai\\WorkBuddyAI\\resources\\app.asar.unpacked\\cli\\dist\\codebuddy-headless.js",
+      "cliShimPath": "D:\\workbuddy ai\\WorkBuddyAI\\resources\\app.asar.unpacked\\cli\\bin\\codebuddy",
+      "cliIdentityWithWorkBuddy": {
+        "sha256OfLauncher": "8DF0F1C7BC6535E5DF0B626450228241D874867023ADB6C9C8F7B1A882590BF4",
+        "sha256OfLauncherWorkBuddy": "8DF0F1C7BC6535E5DF0B626450228241D874867023ADB6C9C8F7B1A882590BF4",
+        "identical": true,
+        "note": "The two shipped launchers are byte-identical, both dist trees contain only codebuddy-headless.js + codebuddy-lite-wb.mjs (+ lazy-* dirs), and both report version 2.156.0. The two desktop builds share the same CodeBuddy CLI payload; the app version file is also identical (37.10.3-24)."
+      },
+      "shimWrappingRequired": "node (same as WorkBuddy)",
+      "cliVersion": { "value": "2.156.0", "confidence": "measured" },
+      "transports": { "note": "Inferred identical to workbuddy.codebuddy because the entry bundles are byte-identical in size and the launcher hash matches. Only --version and the broken-require behaviour were separately re-measured on this install.", "confidence": "inferred" },
+      "modelSelection": { "note": "Same CLI; not separately re-probed here.", "confidence": "inferred" },
+      "providerConfig": { "note": "The desktop app's data root is under .dsh\\harness-accounts\\workbuddy-ai-b when run as a DSH account (binaries/, app/, sessions/, skills/, memory/, connectors/, audit-log/, wbipc/).", "confidence": "inferred" },
+      "multiAccountIsolation": {
+        "switch": "unknown at CLI level; DSH isolates the desktop app by data root (C:\\Users\\Administrator\\.dsh\\harness-accounts\\workbuddy-ai-b)",
+        "tested": false,
+        "confidence": "inferred"
+      },
+      "sessionResume": { "note": "Same CLI surface as workbuddy.codebuddy.", "confidence": "inferred" },
+      "permissions": { "note": "Same CLI surface as workbuddy.codebuddy.", "confidence": "inferred" },
+      "reasoningEffort": { "note": "Same CLI surface as workbuddy.codebuddy (--effort).", "confidence": "inferred" },
+      "authStatus": {
+        "loggedIn": "unknown",
+        "reason": "Same read-only surface limitation as WorkBuddy; nothing is logged in the default config root here (this is a separate desktop app with its own account root under .dsh\\harness-accounts\\workbuddy-ai-b, which was not inspected beyond directory names).",
+        "identityFingerprint": null,
+        "confidence": "unknown"
+      },
+      "evidence": [
+        { "argv": "\"<prefix>\\node.exe\" \"D:\\workbuddy ai\\WorkBuddyAI\\resources\\app.asar.unpacked\\cli\\bin\\codebuddy\" \"--version\"", "exitCode": 0, "stdout": "2.156.0", "stderr": "" },
+        { "argv": "\"<prefix>\\node.exe\" \"...\\cli\\bin\\codebuddy\" \"config\" \"get\" \"theme\"", "exitCode": 1, "stdout": "", "stderr": "Error: Cannot find module '../dist/codebuddy'\nRequire stack:\n- D:\\workbuddy ai\\WorkBuddyAI\\resources\\app.asar.unpacked\\cli\\bin\\codebuddy" },
+        { "argv": "\"<prefix>\\node.exe\" \"...\\cli\\dist\\codebuddy-headless.js\" \"--version\"", "exitCode": 0, "stdout": "2.156.0", "stderr": "" },
+        { "argv": "Get-FileHash <both launchers> -Algorithm SHA256", "exitCode": 0, "stdout": "both = 8DF0F1C7BC6535E5DF0B626450228241D874867023ADB6C9C8F7B1A882590BF4" },
+        { "argv": "Get-Content \"D:\\workbuddy ai\\WorkBuddyAI\\version\"", "exitCode": 0, "stdout": "37.10.3-24" }
+      ]
+    },
+
+    "mimo": {
+      "displayName": "MiMo (mimocode)",
+      "confidence": "measured",
+      "entryPath": "C:\\Users\\Administrator\\.mimocode\\bin\\mimo.exe",
+      "shimPath": null,
+      "entryResolution": "Native .exe on PATH (C:\\Users\\Administrator\\.mimocode\\bin). No shim, no node wrapper. Executable is 126240256 bytes.",
+      "shimWrappingRequired": "none",
+      "version": { "value": "0.1.4", "confidence": "measured" },
+      "transports": {
+        "acp": { "supported": true, "flags": ["mimo acp  ('start ACP (Agent Client Protocol) server')"], "confidence": "measured" },
+        "headlessOneShot": { "supported": true, "flags": ["mimo run [message..]", "run --format default|json", "run -m/--model", "run --command", "run --share", "run --pure"], "confidence": "measured" },
+        "server": { "supported": true, "flags": ["mimo serve  ('starts a headless mimocode server')", "--hostname (default 127.0.0.1)", "--port (default 0)", "--cors", "--mdns", "--no-auth (DANGEROUS)", "mimo attach <url>"], "confidence": "measured" },
+        "ptyTui": { "supported": true, "flags": ["mimo [project]  (default TUI)", "--pure (run without external plugins)"], "confidence": "measured" },
+        "mcp": { "supported": true, "flags": ["mimo mcp"], "confidence": "measured" },
+        "debugTools": { "supported": true, "flags": ["mimo debug", "mimo db", "mimo export|import", "mimo stats"] },
+        "guiCdpWindow": { "supported": "unknown" }
+      },
+      "modelSelection": {
+        "flag": "-m, --model <provider/model>",
+        "listCommand": "mimo models [provider]",
+        "listCount": 7,
+        "list": ["mimo/mimo-auto", "xiaomi/mimo-v2.5", "xiaomi/mimo-v2.5-pro", "xiaomi/mimo-v2.5-pro-ultraspeed", "xiaomi/mimo-v2.6-flash", "xiaomi/mimo-v2.6-pro", "xiaomi/mimo-v2.6-pro-ultraspeed"],
+        "confidence": "measured"
+      },
+      "providerConfig": {
+        "files": [
+          "C:\\Users\\Administrator\\.config\\mimocode\\mimocode.jsonc (3668 bytes; + package.json, .gitignore, backgrounds/, skills/, node_modules/)",
+          "C:\\Users\\Administrator\\.local\\share\\mimocode\\ (auth.json 2 bytes, installation_id 36 bytes, mimo-free-client 64 bytes, mimo-key-name 26 bytes, mimocode.db ~698 MB, trusted-workspaces.json)"
+        ],
+        "env": ["MIMOCODE_CONFIG", "MIMOCODE_CONFIG_DIR", "MIMOCODE_CONFIG_CONTENT", "MIMOCODE_HOME", "MIMOCODE_DB", "MIMOCODE_MODELS_PATH", "MIMOCODE_MODELS_URL", "MIMOCODE_TUI_CONFIG", "MIMOCODE_PERMISSION", "XDG_CONFIG_HOME", "XDG_DATA_HOME"],
+        "envEvidence": "ASCII string scan over the whole mimo.exe (126240256 bytes).",
+        "confidence": "measured (names/paths)"
+      },
+      "multiAccountIsolation": {
+        "switch": "tested MIMOCODE_CONFIG_DIR and MIMOCODE_HOME",
+        "tested": true,
+        "result": "PARTIAL. MIMOCODE_CONFIG_DIR=<fresh temp dir>: 'mimo models' STILL returned all 7 entries; only a .gitignore was created in the temp dir -> no isolating effect on the catalog. MIMOCODE_HOME=<fresh temp dir>: 'mimo models' returned only 4 entries (mimo/mimo-auto + the three xiaomi/mimo-v2.5* entries) instead of 7 -> the data root does shift, but a non-empty catalog remains. Neither switch produced an empty/credential-free state, so credential isolation is NOT demonstrated.",
+        "confidence": "measured"
+      },
+      "sessionResume": {
+        "mechanisms": ["-c, --continue", "-s, --session <id>", "--fork (requires --continue or --session)", "mimo session", "mimo export [sessionID]", "mimo import <file>"],
+        "confidence": "measured"
+      },
+      "permissions": {
+        "flags": ["--never-ask  ('start in never-ask mode - auto-decide without asking (permissions excluded)')", "--trust  ('skip workspace trust prompt and trust the directory')"],
+        "note": "No sandbox flag appears in 'mimo --help' or 'mimo run --help'.",
+        "confidence": "measured"
+      },
+      "reasoningEffort": {
+        "mechanism": "none found in 'mimo --help' or 'mimo run --help'.",
+        "confidence": "measured (absence in help)"
+      },
+      "authStatus": {
+        "loggedIn": "unknown",
+        "reason": "'mimo providers' is aliased to 'auth' and manages credentials; it was not executed because it may print or prompt for credential material. File-level observation only: C:\\Users\\Administrator\\.local\\share\\mimocode\\auth.json is 2 bytes (consistent with an empty JSON object), and a 'mimo-free-client' 64-byte file exists alongside a 'mimo-key-name' 26-byte file.",
+        "identityFingerprint": null,
+        "confidence": "unknown (deliberately not measured); inferred (auth store appears empty)"
+      },
+      "evidence": [
+        { "argv": "\"C:\\Users\\Administrator\\.mimocode\\bin\\mimo.exe\" \"--version\"", "exitCode": 0, "stdout": "0.1.4", "stderr": "" },
+        { "argv": "\"...\\mimo.exe\" \"models\"", "exitCode": 0, "stdout": "mimo/mimo-auto\nxiaomi/mimo-v2.5\nxiaomi/mimo-v2.5-pro\nxiaomi/mimo-v2.5-pro-ultraspeed\nxiaomi/mimo-v2.6-flash\nxiaomi/mimo-v2.6-pro\nxiaomi/mimo-v2.6-pro-ultraspeed", "stderr": "" },
+        { "argv": "\"...\\mimo.exe\" \"models\"  [env MIMOCODE_CONFIG_DIR=<%TEMP%\\hp-iso6\\mimocfg>]", "exitCode": 0, "stdout": "(all 7 entries, unchanged; temp dir only received .gitignore)", "stderr": "" },
+        { "argv": "\"...\\mimo.exe\" \"models\"  [env MIMOCODE_HOME=<%TEMP%\\hp-iso6\\mimohome>]", "exitCode": 0, "stdout": "mimo/mimo-auto\nxiaomi/mimo-v2.5\nxiaomi/mimo-v2.5-pro\nxiaomi/mimo-v2.5-pro-ultraspeed", "stderr": "" }
+      ]
+    },
+
+    "kimi": {
+      "displayName": "Kimi (kimi-code)",
+      "confidence": "measured",
+      "entryPath": "C:\\Users\\Administrator\\.kimi-code\\bin\\kimi.exe",
+      "shimPath": null,
+      "entryResolution": "Native .exe on PATH. No shim, no node wrapper.",
+      "shimWrappingRequired": "none",
+      "version": { "value": "0.26.0", "confidence": "measured" },
+      "transports": {
+        "acp": { "supported": true, "flags": ["kimi acp [options]  ('Run kimi-code as an Agent Client Protocol (ACP) server over stdio')"], "confidence": "measured" },
+        "headlessOneShot": { "supported": true, "flags": ["-p, --prompt <prompt>  ('Run one prompt non-interactively and print the response')", "--output-format <text|stream-json>"], "confidence": "measured" },
+        "server": { "supported": true, "flags": ["kimi server  ('Run the local Kimi server (REST + WebSocket + web UI)')", "kimi web [options]  ('Open the Kimi web UI (starts a background daemon if needed)')"], "confidence": "measured" },
+        "ptyTui": { "supported": true, "flags": ["default interactive"], "confidence": "measured" },
+        "visualizer": { "supported": true, "flags": ["kimi vis [options] [sessionId]"] },
+        "guiCdpWindow": { "supported": "unknown" }
+      },
+      "modelSelection": {
+        "flag": "-m, --model <model>  ('LLM model alias to use for this invocation. Defaults to default_model in config.toml')",
+        "listCommand": null,
+        "listCommandNote": "No model-list command exists in 'kimi --help'. The nearest read-only command is 'kimi provider list', which reports configured providers and model counts.",
+        "providerListCommand": "kimi provider list",
+        "providerListResult": "No providers configured.",
+        "listCount": 0,
+        "confidence": "measured"
+      },
+      "providerConfig": {
+        "files": [
+          "C:\\Users\\Administrator\\.kimi-code\\config.toml  (181 bytes; content is comments only: '# Runtime settings for Kimi Code. / This file starts empty so built-in defaults can apply. / Login will populate managed Kimi provider and model entries.')",
+          "C:\\Users\\Administrator\\.kimi-code\\tui.toml  (does NOT exist - reported by doctor)",
+          "C:\\Users\\Administrator\\.kimi-code\\device_id (36 bytes)"
+        ],
+        "configSubcommands": ["kimi provider add <url>", "kimi provider remove <providerId>", "kimi provider list [options]", "kimi provider catalog"],
+        "env": "unknown (kimi --help lists no environment variables)",
+        "confidence": "measured (paths), unknown (isolation env var)"
+      },
+      "multiAccountIsolation": {
+        "switch": "unknown",
+        "tested": false,
+        "result": "No config-dir env var is documented in 'kimi --help'. A candidate was not guessed-and-tested because a negative result would be indistinguishable from a wrong guess. Recorded unknown.",
+        "confidence": "unknown"
+      },
+      "sessionResume": {
+        "mechanisms": ["-S, --session [id]  ('Resume a session. With ID: resume that session. Without ID: interactively pick.')", "-c, --continue  ('Continue the previous session for the working directory')", "kimi export [options] [sessionId]"],
+        "confidence": "measured"
+      },
+      "permissions": {
+        "flags": ["-y, --yolo  ('Automatically approve all actions')", "--auto  ('Start in auto permission mode')", "--plan  ('Start in plan mode')"],
+        "confidence": "measured"
+      },
+      "reasoningEffort": {
+        "mechanism": "none found in 'kimi --help'.",
+        "confidence": "measured (absence in help)"
+      },
+      "authStatus": {
+        "loggedIn": false,
+        "evidenceKind": "inferred from config + read-only provider listing",
+        "reason": "'kimi login' (device-code flow) was NOT run. 'kimi provider list' returned 'No providers configured.' and config.toml contains only comments, so no provider or credential is configured in the default config root. 'kimi doctor' reports 'All checked config files are valid' with OK config.toml at C:/Users/Administrator/.kimi-code/config.toml.",
+        "identityFingerprint": null,
+        "confidence": "inferred"
+      },
+      "evidence": [
+        { "argv": "\"C:\\Users\\Administrator\\.kimi-code\\bin\\kimi.exe\" \"--version\"", "exitCode": 0, "stdout": "0.26.0", "stderr": "" },
+        { "argv": "\"...\\kimi.exe\" \"provider\" \"list\"", "exitCode": 0, "stdout": "No providers configured.", "stderr": "" },
+        { "argv": "\"...\\kimi.exe\" \"doctor\"", "exitCode": 0, "stdout": "Kimi doctor\n\nOK config.toml  C:/Users/Administrator/.kimi-code/config.toml\nSKIP tui.toml     C:\\Users\\Administrator\\.kimi-code\\tui.toml\n  File does not exist; built-in defaults will apply.\n\nAll checked config files are valid.", "stderr": "" }
+      ]
+    },
+
+    "grok": {
+      "displayName": "Grok CLI",
+      "confidence": "measured",
+      "entryPath": "C:\\Users\\Administrator\\AppData\\Local\\grok\\grok.exe",
+      "shimPath": null,
+      "entryResolution": "Native .exe on PATH. No shim, no node wrapper.",
+      "shimWrappingRequired": "none",
+      "version": { "value": "grok 0.2.103 (89c3d36fb6)", "sidecarFile": "C:\\Users\\Administrator\\.grok\\version.json = {\"version\": \"0.2.103\", \"stable_version\": null, \"checked_at\": \"2026-07-18T06:17:06.7261188Z\"}", "confidence": "measured" },
+      "transports": {
+        "headlessOneShot": { "supported": true, "flags": ["-p, --single <PROMPT>  ('Single-turn prompt. Prints the response to stdout and exits')", "--prompt-file <PATH>", "--prompt-json <JSON>", "--output-format <plain|json|streaming-json>  (default plain)", "--json-schema <SCHEMA>", "--check", "--best-of-n <N>  (headless only)", "--max-turns <N>"], "confidence": "measured" },
+        "agentSubprocessModes": { "supported": true, "flags": ["grok agent stdio  ('Run the agent over stdio')", "grok agent headless  ('Run the agent headlessly over the Grok WebSocket relay')", "grok agent serve  ('Run the agent as a WebSocket server')", "grok agent leader  ('Run as the shared leader process for other clients')", "--leader / --no-leader", "--leader-socket <PATH> (default ~/.grok/leader.sock)"], "confidence": "measured" },
+        "ptyTui": { "supported": true, "flags": ["default TUI", "--minimal", "--no-alt-screen", "--fullscreen", "--wrap (OSC 52 clipboard)"], "confidence": "measured" },
+        "dashboard": { "supported": true, "flags": ["dashboard (Open the Agent Dashboard view at startup)"] },
+        "mcp": { "supported": true, "flags": ["mcp"] },
+        "acp": { "supported": false, "note": "No 'acp' subcommand or flag in 'grok --help' (subcommands: agent, completions, dashboard, export, help, inspect, leader, login, logout, mcp, memory, models, plugin, sessions, setup, trace, update, version, worktree, wrap).", "confidence": "measured" },
+        "guiCdpWindow": { "supported": "unknown" }
+      },
+      "modelSelection": {
+        "flag": "-m, --model <MODEL>  ('Model ID to use')",
+        "listCommand": "grok models  ('List available models and exit')",
+        "listCount": 1,
+        "listCommandNote": "Measured output: 'You are not authenticated.' followed by 'Default model: grok-build' and 'Available models:  * grok-build (default)'. So only 1 model is listed, and the CLI itself reports the session is unauthenticated.",
+        "confidence": "measured"
+      },
+      "providerConfig": {
+        "files": [
+          "C:\\Users\\Administrator\\.grok\\config.toml (136 bytes; [ui] max_thoughts_width = 120, fork_secondary_model = \"grok-build\", yolo = false, compact_mode = false, permission_mode = \"always-approve\")",
+          "C:\\Users\\Administrator\\.grok\\auth.json (1742 bytes - EXISTENCE AND SIZE ONLY; contents not read)",
+          "C:\\Users\\Administrator\\.grok\\models_cache.json (top keys: fetched_at, grok_version, auth_method, origin, etag, models)",
+          "C:\\Users\\Administrator\\.grok\\version.json, CHANGELOG.json, README.md, trusted_folders.toml",
+          "C:\\Users\\Administrator\\.grok\\ (sessions/, skills/, logs/, marketplace-cache/, memtrace/, bundled/, vendor/, downloads/)"
+        ],
+        "env": ["GROK_SANDBOX  (only env var documented in --help: '--sandbox <PROFILE> ... [env: GROK_SANDBOX=]')"],
+        "inferredProviderOverrideFlags": ["--xai-api-base-url", "--cli-chat-proxy-base-url", "--grok-ws-url", "--grok-ws-origin"],
+        "confidence": "measured (paths/keys/flag), unknown (a config-dir env var)"
+      },
+      "multiAccountIsolation": {
+        "switch": "unknown",
+        "tested": false,
+        "result": "No CODEX_HOME/CLAUDE_CONFIG_DIR-style override is documented in 'grok --help'; the only documented env var is GROK_SANDBOX (sandbox profile, not config isolation). A candidate name was not guessed-and-tested.",
+        "confidence": "unknown"
+      },
+      "sessionResume": {
+        "mechanisms": ["-r, --resume [<SESSION_ID>]  ('Resume a session by ID, or the most recent if omitted')", "-c, --continue", "--fork-session", "-s, --session-id <UUID>  (new conversation only; with --resume/--continue only valid together with --fork-session)", "--restore-code  ('Check out the original session's commit when resuming')", "grok sessions list | search | delete", "grok export"],
+        "confidence": "measured"
+      },
+      "permissions": {
+        "permissionMode": "--permission-mode <default|acceptEdits|auto|dontAsk|bypassPermissions|plan>",
+        "sandbox": "--sandbox <PROFILE>  [env: GROK_SANDBOX=]",
+        "others": ["--always-approve", "--allow <RULE> (alias --allowedTools)", "--deny <RULE> (alias --disallowedTools)", "--tools <TOOLS>", "--disallowed-tools <TOOLS>", "--no-plan", "--no-subagents"],
+        "configDefault": "[ui] permission_mode = \"always-approve\" and yolo = false in ~/.grok/config.toml",
+        "confidence": "measured"
+      },
+      "reasoningEffort": {
+        "mechanism": "--reasoning-effort <EFFORT>  (alias: --effort)",
+        "valuesEnumerated": "unknown (help prints no choice list)",
+        "confidence": "measured (flag), unknown (values)"
+      },
+      "authStatus": {
+        "loggedIn": false,
+        "identityFingerprint": null,
+        "readOnlyCommand": "grok models (no dedicated status subcommand exists; 'grok inspect' shows discovered config)",
+        "rawOutput": "You are not authenticated.\nDefault model: grok-build\nAvailable models:\n  * grok-build (default)",
+        "note": "auth.json EXISTS (1742 bytes) yet the CLI reports 'You are not authenticated.' - the stored credential is either expired, for a different auth method, or not usable for model listing. Existence of the file is NOT treated as login.",
+        "confidence": "measured"
+      },
+      "evidence": [
+        { "argv": "\"C:\\Users\\Administrator\\AppData\\Local\\grok\\grok.exe\" \"--version\"", "exitCode": 0, "stdout": "grok 0.2.103 (89c3d36fb6)", "stderr": "" },
+        { "argv": "\"...\\grok.exe\" \"models\"", "exitCode": 0, "stdout": "You are not authenticated.\nDefault model: grok-build\nAvailable models:\n  * grok-build (default)", "stderr": "" },
+        { "argv": "\"...\\grok.exe\" \"agent\" \"--help\"", "exitCode": 0, "stdout": "Run Grok without the interactive UI\nCommands:\n  stdio     Run the agent over stdio\n  headless  Run the agent headlessly over the Grok WebSocket relay\n  serve     Run the agent as a WebSocket server\n  leader    Run as the shared leader process for other clients" },
+        { "argv": "Get-Content C:\\Users\\Administrator\\.grok\\config.toml", "exitCode": 0, "stdout": "[ui]\nmax_thoughts_width = 120\nfork_secondary_model = \"grok-build\"\nyolo = false\ncompact_mode = false\npermission_mode = \"always-approve\"" }
+      ]
+    },
+
+    "antigravity-agy": {
+      "displayName": "Antigravity CLI (agy / agy-core)",
+      "confidence": "measured",
+      "entryPath": "C:\\Users\\Administrator\\AppData\\Local\\agy\\bin\\agy-core.exe",
+      "shimPath": "C:\\Users\\Administrator\\AppData\\Local\\agy\\bin\\agy.cmd  (and agy.ps1)",
+      "entryResolution": "agy.cmd contains exactly: \"%~dp0agy-core.exe\" %*  - a plain pass-through to the native exe. NO node wrapper and NO ELECTRON_RUN_AS_NODE needed. Sibling artifacts in the same directory: agy-core.exe (193113240 bytes), agy-core.exe.orig (193006232 bytes), agy-prompt.exe (227328), agy-prompt.cmd, antigravity.cmd, deepseek.cmd, dsh.cmd.",
+      "separateUserWrapperWarning": "agy-prompt.cmd and antigravity.cmd do NOT launch the vendor CLI. Both contain: node \"C:\\Users\\Administrator\\antigravity-cli-prompt\\index.mjs\" %*  - a user-authored wrapper script. Treat them as user tooling, not as the vendor entry.",
+      "shimWrappingRequired": "none",
+      "version": { "value": "1.3.3", "confidence": "measured" },
+      "transports": {
+        "headlessOneShot": { "supported": true, "flags": ["-p, --print  ('Run a single prompt non-interactively and print the response')", "--prompt (alias)", "--output-format text|json|stream-json  (default text)", "--input-format text|stream-json  ('stream-json reads one NDJSON message per line from stdin and runs a turn for each; it requires --output-format stream-json')", "--json-schema", "--print-timeout  (default 0s = wait until the turn completes)", "--disable-slash-commands"], "confidence": "measured" },
+        "promptInteractive": { "supported": true, "flags": ["-i, --prompt-interactive", "--prompt-interactive"] },
+        "ptyTui": { "supported": true, "flags": ["default interactive CLI session"] },
+        "remoteControl": { "supported": true, "flags": ["--remote-control  ('Create a remote connection for the CLI session on start up')", "remote-control (subcommand: start, status, stop)"], "confidence": "measured" },
+        "mcp": { "supported": true, "flags": ["mcp (Manage MCP servers: add, remove, list, enable, disable)"] },
+        "plugins": { "supported": true, "flags": ["plugin / plugins (install, uninstall, list, enable, disable)"] },
+        "micServe": { "supported": true, "flags": ["mic-serve  ('Serve this machine's microphone to a CLI on another host')"] },
+        "acp": { "supported": false, "note": "The full agy-core --help subcommand list was enumerated: agent, agents, changelog, help, install, mcp, mic-serve, models, plugin, plugins, remote-control, update. No 'acp'.", "confidence": "measured" },
+        "appServerJsonRpc": { "supported": false, "note": "Not present in help.", "confidence": "measured" },
+        "guiCdpWindow": { "supported": "unknown", "note": "The Antigravity IDE is a separate product; agy-core is CLI-only." }
+      },
+      "modelSelection": {
+        "flag": "--model  ('Model for the current CLI session')",
+        "listCommand": "agy-core models  ('List available models')",
+        "listCount": 6,
+        "list": ["gemini-3.8-flash-high  (Gemini 3.8 Flash (High))", "gemini-3.8-flash-medium  (Gemini 3.8 Flash (Medium))", "gemini-3.8-flash-low  (Gemini 3.8 Flash (Low))", "claude-sonnet-4-6  (Claude Sonnet 4.6 (Thinking))", "claude-opus-4-6-thinking  (Claude Opus 4.6 (Thinking))", "gpt-oss-120b-medium  (GPT-OSS 120B (Medium))"],
+        "listCommandSideEffect": "stdout carried the model rows on STDOUT while 'Fetching available models...' was written to STDERR; exit code 0.",
+        "confidence": "measured"
+      },
+      "providerConfig": {
+        "files": "unknown - no ~/.antigravity or similar config root was identified during this probe. The 'install' subcommand ('Configure environment paths and shell settings') is the documented entry point for environment setup.",
+        "env": "unknown",
+        "confidence": "unknown"
+      },
+      "multiAccountIsolation": {
+        "switch": "unknown; only project scoping flags were found (--project <ID|name>, --new-project)",
+        "tested": false,
+        "confidence": "unknown"
+      },
+      "sessionResume": {
+        "mechanisms": ["--continue (and short alias -c)", "--conversation  ('Resume a previous conversation by ID')"],
+        "confidence": "measured"
+      },
+      "permissions": {
+        "flags": ["--dangerously-skip-permissions  ('Auto-approve all tool permission requests without prompting')", "--mode  ('Set the agent execution mode for this session (accept-edits, plan)')", "--sandbox  ('Run in a sandbox with terminal restrictions enabled')", "--agent"],
+        "confidence": "measured"
+      },
+      "reasoningEffort": {
+        "mechanism": "--effort  ('Reasoning effort for the current CLI session (low|medium|high|xhigh|max)')",
+        "confidence": "measured"
+      },
+      "authStatus": {
+        "loggedIn": "unknown",
+        "reason": "agy-core exposes no login/status subcommand (the subcommand list has install/mcp/models/agent/remote-control/plugin/mic-serve/changelog/update only). 'models' returned a catalog, which proves nothing about authentication.",
+        "identityFingerprint": null,
+        "confidence": "unknown"
+      },
+      "evidence": [
+        { "argv": "\"C:\\Users\\Administrator\\AppData\\Local\\agy\\bin\\agy-core.exe\" \"--version\"", "exitCode": 0, "stdout": "1.3.3", "stderr": "" },
+        { "argv": "\"...\\agy-core.exe\" \"models\"", "exitCode": 0, "stdout": "gemini-3.8-flash-high\tGemini 3.8 Flash (High)\ngemini-3.8-flash-medium\tGemini 3.8 Flash (Medium)\ngemini-3.8-flash-low\tGemini 3.8 Flash (Low)\nclaude-sonnet-4-6\tClaude Sonnet 4.6 (Thinking)\nclaude-opus-4-6-thinking\tClaude Opus 4.6 (Thinking)\ngpt-oss-120b-medium\tGPT-OSS 120B (Medium)", "stderr": "Fetching available models..." },
+        { "argv": "\"...\\agy-core.exe\" \"agents\"", "exitCode": 0, "stdout": "(empty)", "stderr": "(empty)" },
+        { "argv": "\"...\\agy-core.exe\" \"--help\"", "exitCode": 0, "stdout": "(stdout empty; help goes to STDERR) Usage of agy-core.exe: --add-dir, --agent, -c, --continue, --conversation, --dangerously-skip-permissions, --disable-slash-commands, --effort, -i, --input-format, --json-schema, --log-file, --mode, --model, --new-project, --output-format, -p, --print, --print-timeout, --project, --prompt, --prompt-interactive, --remote-control, --sandbox", "stderr": "(the help text itself)" },
+        { "argv": "Get-Content C:\\Users\\Administrator\\AppData\\Local\\agy\\bin\\agy.cmd", "exitCode": 0, "stdout": "@echo off\nrem Antigravity CLI: direct pass-through of args\n\"%~dp0agy-core.exe\" %*" }
+      ]
+    },
+
+    "zcode": {
+      "displayName": "ZCode CLI",
+      "confidence": "unknown",
+      "entryPath": null,
+      "entryPathNote": "NO CLI LAUNCHER WAS FOUND. This is the weakest result in the whole probe and is recorded as such.",
+      "whatWasMeasured": {
+        "guiApp": "D:\\zai\\ZCode\\ZCode.exe (Electron desktop app). Install manifest D:\\zai\\ZCode\\.zcode-install-manifest lists only ZCode.exe, DLLs, locales, resources\\app.asar and resources\\app.asar.unpacked\\node_modules\\node-pty\\...  - there is no bin/ and no CLI shim.",
+        "shortcut": "C:\\Users\\Administrator\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\ZCode.lnk -> TargetPath D:\\zai\\ZCode\\ZCode.exe, Arguments (none), WorkingDirectory D:\\zai\\ZCode",
+        "pathLookup": "'where.exe zcode' -> 'INFO: Could not find files for the given pattern(s).'  No App Paths registry entry for zcode.",
+        "asarPackageJson": "Extracted from resources\\app.asar header: name '@zcode/desktop', private true, main 'out/main/index.js', type 'module'. Dependencies include @zcode/rpc, @zcode/server, @zcode/services, @zcode/provider, @zcode/provider-node, @zcode/shared, @zcode/ui, @modelcontextprotocol/client, node-pty, playwright-core. NO 'bin' field => no CLI entry point is exposed by the desktop package.",
+        "asarTree": "Root keys: node_modules, out, package.json. out/ contains: host, main, preload, renderer, scheduler, plugin-sandbox, metadata. out/main/index.js is the Electron main entry.",
+        "cliDataRoot": "C:\\Users\\Administrator\\.zcode\\cli\\ EXISTS and is unmistakably a coding-agent CLI data root: config.json, models\\api.json (2354945 bytes), exec\\ (many sess_<uuid> dirs), agents\\ (many sess_<uuid> dirs), rollout\\, memories\\, skills\\, plugins\\, db\\db.sqlite (779276288 bytes), log\\zcode-YYYY-MM-DD.jsonl. This proves a ZCode CLI has run and persists sessions here, but the launcher that produced it was NOT located.",
+        "updaterArtifacts": ["C:\\Users\\Administrator\\AppData\\Local\\@zcodedesktop-updater\\pending\\ZCode-3.15.1-win-x64.exe", "D:\\bingdown\\ZCode-3.14.3-win-x64.exe"],
+        "notVerified": "'ZCode.exe --help' was deliberately NOT executed: it is a GUI Electron app and launching it could open a window or hang. No interactive/TUI launch was attempted."
+      },
+      "version": { "value": "unknown", "inferredVersionLine": "3.x (from installer filenames ZCode-3.15.1 / ZCode-3.14.3 seen on disk; the installed app build number was NOT measured)", "confidence": "inferred" },
+      "transports": {
+        "guiCdpWindow": { "supported": true, "note": "Electron desktop app; CDP/window attach is the plausible transport but was NOT probed by this teammate.", "confidence": "inferred" },
+        "acp": { "supported": "unknown" },
+        "appServerJsonRpc": { "supported": "unknown", "note": "The desktop bundle declares @zcode/rpc and @zcode/server dependencies, which suggests an internal RPC/JSON-RPC surface. That is a dependency-list inference only, not a measured protocol." },
+        "headlessOneShot": { "supported": "unknown" },
+        "ptyTui": { "supported": "unknown", "note": "node-pty is bundled, so an embedded terminal exists inside the app." }
+      },
+      "modelSelection": {
+        "mechanism": "config key 'model' in C:\\Users\\Administrator\\.zcode\\cli\\config.json - current value 'default-mimo/mimo-v2.5-pro' (i.e. <provider>/<model>)",
+        "listCommand": null,
+        "listCommandNote": "A catalog file exists (C:\\Users\\Administrator\\.zcode\\cli\\models\\api.json, 2354945 bytes) but it was NOT parsed, so the entry count is unknown.",
+        "listCount": "unknown",
+        "confidence": "measured (config key + value), unknown (catalog contents / any CLI command)"
+      },
+      "providerConfig": {
+        "files": ["C:\\Users\\Administrator\\.zcode\\cli\\config.json"],
+        "observedStructure": {
+          "provider.default-mimo": { "kind": "anthropic", "name": "mimo", "baseURLHost": "api.xiaomimimo.com (path /anthropic)", "apiKey": "<PRESENT - VALUE DELIBERATELY NOT RECORDED>", "models": ["mimo-v2.5-pro"] },
+          "model": "default-mimo/mimo-v2.5-pro",
+          "plugins.enabledPlugins": ["android-emulator@zcode-plugins-official", "ios-simulator@zcode-plugins-official", "mimosa@zcode-plugins-official", "github@zcode-plugins-official", "computer-use@zcode-plugins-official", "zcode-guide@zcode-plugins-official (false)"]
+        },
+        "env": "unknown",
+        "confidence": "measured (path + non-secret structure), unknown (isolation env var)"
+      },
+      "multiAccountIsolation": { "switch": "unknown", "tested": false, "confidence": "unknown" },
+      "sessionResume": {
+        "mechanism": "unknown (no CLI to invoke)",
+        "supportingObservation": "Session directories named sess_<uuid> persist under .zcode\\cli\\exec and .zcode\\cli\\agents, so sessions are resumable in principle.",
+        "confidence": "inferred"
+      },
+      "permissions": { "note": "unknown - no CLI surface available to inspect." },
+      "reasoningEffort": { "note": "unknown - no CLI surface available to inspect." },
+      "authStatus": {
+        "loggedIn": "unknown",
+        "reason": "No read-only CLI status command was reachable. A provider apiKey is present in .zcode\\cli\\config.json (a static key, not an OAuth session), but that is not proof of a live logged-in account.",
+        "identityFingerprint": null,
+        "confidence": "unknown"
+      },
+      "evidence": [
+        { "argv": "where.exe zcode", "exitCode": 1, "stdout": "INFO: Could not find files for the given pattern(s).", "stderr": "" },
+        { "argv": "(WScript.Shell).CreateShortcut('...\\Start Menu\\Programs\\ZCode.lnk')", "exitCode": 0, "stdout": "TARGET: D:\\zai\\ZCode\\ZCode.exe\nARGS  :\nWORKDIR: D:\\zai\\ZCode" },
+        { "argv": "asar header parse of D:\\zai\\ZCode\\resources\\app.asar (340511069 bytes) + read of embedded package.json", "exitCode": 0, "stdout": "root keys: node_modules, out, package.json; name '@zcode/desktop'; main 'out/main/index.js'; no 'bin' field; deps include @zcode/rpc, @zcode/server, @zcode/services" },
+        { "argv": "Get-Content C:\\Users\\Administrator\\.zcode\\cli\\config.json", "exitCode": 0, "stdout": "{ \"provider\": { \"default-mimo\": { \"kind\": \"anthropic\", \"name\": \"mimo\", \"options\": { \"apiKey\": \"<REDACTED>\", \"baseURL\": \"https://api.xiaomimimo.com/anthropic\" }, \"models\": { \"mimo-v2.5-pro\": { \"name\": \"mimo-v2.5-pro\" } } } }, \"model\": \"default-mimo/mimo-v2.5-pro\", \"plugins\": {...} }" },
+        { "argv": "Get-ChildItem C:\\Users\\Administrator\\.zcode", "exitCode": 0, "stdout": "cli/  export-log-stage/  feedback/  jev/  plugin-workspace/  skills/  tmp/  v2/  workspace/  mimosa-debug.log (10061383 bytes)" }
+      ]
+    }
+  },
+
+  "summary": {
+    "entryPathResolvedCount": 11,
+    "targetsWithoutResolvedEntry": ["zcode"],
+    "vendorSharedStorageFlag": [
+      "claude-code, opencode, pi and the dsh.cmd shim all resolve into C:\\Users\\Administrator\\.workbuddy\\binaries\\node\\versions\\22.22.2\\node_modules\\ - WorkBuddy's bundled Node prefix. This is vendor-shared storage, not a per-harness isolated install.",
+      "The same prefix supplies node.exe (87074816 bytes) which pi.cmd depends on."
+    ],
+    "isolationMeasuredWorking": ["CODEX_HOME (codex)", "CLAUDE_CONFIG_DIR (claude-code)", "PI_CODING_AGENT_DIR (pi)"],
+    "isolationMeasuredNotWorkingOrInconclusive": ["opencode (5 switches tested, none changed the credential result; shared 'opencode serve --service' process is the probable cause)", "mimo (MIMOCODE_CONFIG_DIR no effect; MIMOCODE_HOME partial)", "workbuddy CodeBuddy (CODEBUDDY_CONFIG_DIR present in bundle but behaviourally untestable - launcher bundle is broken)"],
+    "isolationUnknown": ["kimi", "grok", "antigravity-agy", "zcode", "dsh-native"],
+    "realModelListObtained": { "pi": 96, "workbuddy-cli-catalog-file": 11, "codex": 10, "mimo": 7, "antigravity-agy": 6, "grok": 1, "opencode": 0, "qoder-cn": 0, "kimi": 0 },
+    "liveModelRequestIssued": false,
+    "liveModelRequestNote": "No harness was sent a real prompt. Nothing in this file should be read as evidence that any harness can complete a model request."
+  }
+}

@@ -8,6 +8,7 @@ import { spawn, spawnSync, type ChildProcessWithoutNullStreams } from 'node:chil
 import { createInterface } from 'node:readline'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { launchEnv } from './launcher.js'
 
 export interface HelperWindow {
   hwnd: number
@@ -77,7 +78,9 @@ export class WindowHelper {
         failures.push(`${python}: exit ${String(probe.status)} ${detail}`)
         continue
       }
-      const child = spawn(python, ['-u', script], { stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true }) as ChildProcessWithoutNullStreams
+      // env 用 launchEnv()：helper 会由 Python 侧拉起 GUI 应用，
+      // 继承来的 ELECTRON_RUN_AS_NODE 会让 Electron 应用以 Node 模式退出、不开窗。
+      const child = spawn(python, ['-u', script], { stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true, env: launchEnv() }) as ChildProcessWithoutNullStreams
       const hello = new Promise<HelperReply>((resolve, reject) => {
         const timer = setTimeout(() => reject(new Error('window helper did not announce itself within 30s')), 30000)
         const reader = createInterface({ input: child.stdout })

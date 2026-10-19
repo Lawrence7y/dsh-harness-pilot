@@ -1,9 +1,3 @@
-/**
- * Plugin registry: harness targets, defaults, and the Schemastery Config schema.
- *
- * 内置一份「本机实探过的 harness 目录」：CLI 类走 acp/headless/pty，GUI 类走 cdp/window。
- * 用户在 profile 里只写差异项（换路径、固定模型、加参数）。
- */
 import z from '@deepseek-ai/schemastery';
 import type { CdpSpec, TargetConfig, WindowSpec } from './types.js';
 export interface Config {
@@ -33,11 +27,24 @@ export type TargetPatch = Partial<Omit<TargetConfig, 'window' | 'cdp'>> & {
     cdp?: Partial<CdpSpec>;
 };
 /**
+ * 解析「安装目录名易变」的 GUI 目标的可执行文件路径。
+ *
+ * 背景：Qoder CN IDE 升级/重装会把安装目录在 `D:\Qoder CNide` 与 `D:\Qoder CN IDE`
+ * 之间改名（本机 2026-10-09 实测就是这种情况：旧的 `D:\Qoder CN IDE` 只剩
+ * `resources/` + `debug.log`，exe 已在 `D:\Qoder CNide`）。`command` 一旦对不上，
+ * cdp 通道会因「命令无法解析」直接 skip、window 通道也匹配不到进程，**整个目标静默失效**
+ * —— 而且因为目录还在，光看路径存在性还发现不了。
+ *
+ * 所以这里按「已知候选（新的在前）→ 扫描常见根目录下带同名 exe 的目录」两段解析，
+ * 让目录改名不再需要改配置。
+ */
+/**
  * 内置目标目录。
  *
  * 顺序即真相：能走 ACP 就先 ACP（流式、结构化），其次一次性打印，再退到 PTY，
  * 最后才是 GUI 的 CDP / 窗口。
  */
+export declare function installedCodexEntry(root?: string): string;
 export declare const KNOWN_TARGETS: readonly TargetConfig[];
 export interface ResolvedConfig extends Config {
     resolvedTargets: TargetConfig[];

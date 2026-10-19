@@ -24,6 +24,27 @@ export interface Launcher {
 
 const EXT_RANK: Record<string, number> = { '.exe': 5, '.com': 4, '.cmd': 4, '.bat': 3, '.ps1': 2 }
 
+/**
+ * 启动**外部应用**时的子进程环境。
+ *
+ * 关键：清掉继承来的 `ELECTRON_RUN_AS_NODE`。Electron 只要看到这个变量就以 Node 模式
+ * 运行 —— 不开窗、不初始化应用、直接跑完退出（exit 0）。宿主环境（Codex / 某些 agent
+ * 运行时）会设置它，于是插件"带调试端口把 GUI 应用拉起来"会**静默失败**：没有窗口、
+ * 没有 CDP 端点，最后等端点超时并回收进程，把用户的应用留在关闭状态。
+ *
+ * 实测证据：`"D:\Qoder CN\Qoder CN.exe" --version` 在泄漏该变量的环境下输出 `v24.18.0`
+ * （Node 版本），清掉后才正常开窗（12 个进程）。
+ *
+ * 目标自己显式声明时以目标为准 —— 例如 zcode-cli 那种**就是要**当 Node 跑的 CLI
+ * （`env: { ELECTRON_RUN_AS_NODE: '1' }`）。
+ */
+export function launchEnv(targetEnv: Record<string, string> = {}): Record<string, string> {
+  const inherited = { ...process.env } as Record<string, string | undefined>
+  delete inherited.ELECTRON_RUN_AS_NODE
+  return { ...inherited, ...targetEnv } as Record<string, string>
+}
+
+
 function candidatesOnPath(command: string): string[] {
   if (isAbsolute(command) || command.includes('\\') || command.includes('/')) return [command]
   const where = spawnSync('where.exe', [command], { encoding: 'utf8', windowsHide: true, timeout: 15000 })

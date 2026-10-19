@@ -14,8 +14,24 @@
       #       window:
       #         launch: 'D:\zai\ZCode\ZCode.exe --remote-debugging-port=9333'
 
-# 可选：每个 harness 再挂一个标准 subagent 工具（tool-subagent），
-# 让模型用宿主自带的 `subagent` 语义直接点名某个 harness，例如：
+# 可选：每个 harness 再挂一个**宿主自带的** `subagent` 工具实例（`tool-subagent`），
+# 让模型用标准子代理语义直接点名某个 harness。本插件注册的 provider 名是 `harness-<目标名>`
+# 与 `harness-<目标名>-acct-<档案 id>`（后者在注册期就把账号配方烘进 provider）。
+#
+# ⚠️ 三条都是本机实测过的宿主契约（0.2.0-rc.2），照抄即可；不照抄会**装不起来**：
+#   · 工具实例**不会**自动生成 —— 必须在 composition 里为每个 provider 各写一行；
+#   · `maxDepth: 'provider-managed'` 是**必需**的：本插件的 provider 不声明 `depthLimit`
+#     （外部 CLI 不受 DSH 递归预算约束），写死数字会在挂载时被拒；
+#   · `modelSelectionSettings: true` 要求 provider 声明 `agentOptions` —— 本插件**已经**声明，
+#     并且真的把它兑现（`-m/--model` 落到 CLI 命令行；兑现不了的项显式拒绝）。
+#
+# 模型面参数填的是**宿主 LLM 路由**，不是目标名：本插件的路由是 `pilot-cli`，
+# 模型 id 形如 `<目标名>` 或 `<目标名>::<该 harness 的模型>`。因此这些路由还要在本 profile 的
+# `subagent-model-selection-settings.allowedModels` 白名单里（精确串匹配）。
+#
+# ⚠️ 如实说明一条边界：外部 CLI 是**跨进程** provider（`localAgent === undefined`），
+# 所以宿主不会为它登记目录子会话（子会话血缘 / 策略继承这两条宿主机制拿不到）；
+# 工具本身、runId、stopReason、模型下发都不受影响。
 #
 # - insert:
 #     - id: harness-subagent-opencode
@@ -24,3 +40,5 @@
 #         provider: harness-opencode
 #         toolName: harness_opencode
 #         backgroundMode: one-shot
+#         maxDepth: provider-managed
+#         modelSelectionSettings: true

@@ -7,6 +7,21 @@ export interface Launcher {
     /** 解析到的原始路径 / 命令，用于诊断。 */
     readonly resolved: string;
 }
+/**
+ * 启动**外部应用**时的子进程环境。
+ *
+ * 关键：清掉继承来的 `ELECTRON_RUN_AS_NODE`。Electron 只要看到这个变量就以 Node 模式
+ * 运行 —— 不开窗、不初始化应用、直接跑完退出（exit 0）。宿主环境（Codex / 某些 agent
+ * 运行时）会设置它，于是插件"带调试端口把 GUI 应用拉起来"会**静默失败**：没有窗口、
+ * 没有 CDP 端点，最后等端点超时并回收进程，把用户的应用留在关闭状态。
+ *
+ * 实测证据：`"D:\Qoder CN\Qoder CN.exe" --version` 在泄漏该变量的环境下输出 `v24.18.0`
+ * （Node 版本），清掉后才正常开窗（12 个进程）。
+ *
+ * 目标自己显式声明时以目标为准 —— 例如 zcode-cli 那种**就是要**当 Node 跑的 CLI
+ * （`env: { ELECTRON_RUN_AS_NODE: '1' }`）。
+ */
+export declare function launchEnv(targetEnv?: Record<string, string>): Record<string, string>;
 /** 解析一个 harness 命令；找不到时抛错，消息包含搜索过的位置。 */
 export declare function resolveLauncher(command: string): Launcher;
 export interface BuiltArgv {
